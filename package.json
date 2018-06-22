@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.262.1",
-    "crypto-promise": "^2.1.0"
+    "crypto-promise": "^2.1.0",
+    "tensify": "0.0.4"
   }
 }

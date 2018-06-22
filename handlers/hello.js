@@ -1,10 +1,12 @@
-import handler from '../util/handler'
+import handler from '../utils/handler'
 
 // Hello Hander,
 // returns: "Hello!"
-export default handler((event, context) => ({
-  body: {
-    message: 'Hello!',
-    input: event
+export default handler(function hello(event) {
+  return {
+    body: {
+      message: 'Hello!',
+      input: event
+    }
   }
-}))
+})
