@@ -4,9 +4,6 @@ import handler from '../utils/handler'
 import config from '../config.json'
 import { promisify } from 'util'
 
-// EMAIL STUFF
-// const ses = new AWS.SES()
-
 export async function computeHash(password) {
   let { byte_size, iterations } = config.crypto
 
@@ -37,16 +34,16 @@ export async function storeUser(email, password, salt) {
       email: {
         S: email
       },
-      passwordHash: {
+      password_hash: {
         S: password
       },
-      passwordSalt: {
+      password_salt: {
         S: salt
       },
       verified: {
         BOOL: false
       },
-      verifyToken: {
+      verify_token: {
         S: token
       }
     },
@@ -60,5 +57,4 @@ export default handler(async function register(event) {
   let { salt, hash } = await computeHash(password)
   let token = await storeUser(email, hash, salt)
   return token
-  // sendVerificationEmail(email, token)
 })
