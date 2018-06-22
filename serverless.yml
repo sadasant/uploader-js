@@ -9,4 +9,10 @@ provider:
 
 functions:
   hello:
-    handler: handler.hello
+    handler: handlers/hello
+  register:
+    handler: handlers/register
+    events:
+      - http:
+          path: register
+          method: post

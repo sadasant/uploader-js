@@ -1,9 +1,9 @@
-const path = require("path");
-const slsw = require("serverless-webpack");
+const path = require('path')
+const slsw = require('serverless-webpack')
 
 module.exports = {
   entry: slsw.lib.entries,
-  target: "node",
+  target: 'node',
   mode: 'production',
   module: {
     rules: [
@@ -11,14 +11,14 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader"
+          loader: 'babel-loader'
         }
       }
     ]
   },
   output: {
-    libraryTarget: "commonjs",
-    path: path.join(__dirname, ".webpack"),
-    filename: "[name].js"
+    libraryTarget: 'commonjs',
+    path: path.join(__dirname, '.webpack'),
+    filename: '[name].js'
   }
-};
+}
