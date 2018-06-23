@@ -1,2 +1,3 @@
-export const hello = require('./handlers/hello')
-export const register = require('./handlers/register')
+import 'babel-polyfill'
+export const hello = require('./handlers/hello').default
+export const register = require('./handlers/register').default
