@@ -2,5 +2,10 @@
   "crypto": {
     "byte_size": 128,
     "iterations": 4096
+  },
+  "dynamodb": {
+    "tables": {
+      "users": "AppUsers"
+    }
   }
 }

@@ -7,57 +7,6 @@ provider:
   name: aws
   runtime: nodejs6.10
   stage: dev
-  environment:
-    USER_TABLE: ${self:service}-${opt:stage, self:provider.stage}
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - dynamodb:Query
-        - dynamodb:Scan
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-      Resource: "*"
-
-resources:
-  Resources:
-    UsersDynamoDbTable:
-      Type: AWS::DynamoDB::Table
-      DeletionPolicy: Retain
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S   
-          - AttributeName: email
-            AttributeType: S   
-          - AttributeName: password_hash
-            AttributeType: S   
-          - AttributeName: password_salt
-            AttributeType: S   
-          - AttributeName: verified
-            AttributeType: BOOL   
-          - AttributeName: verify_token
-            AttributeType: S   
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-        GlobalSecondaryIndexes:
-          - IndexName: UserIndex
-            KeySchema:
-              - AttributeName: email
-                KeyType: HASH
-              - AttributeName: password
-                KeyType: RANGE
-            Projection:
-              NonKeyAttributes:
-                - id
-              ProjectionType: INCLUDE
-            ProvisionedThroughput:
-              ReadCapacityUnits: 1
-              WriteCapacityUnits: 1
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.USER_TABLE}
 
 functions:
   hello:

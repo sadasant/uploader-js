@@ -1,5 +1,6 @@
 import { DynamoDbSchema, DynamoDbTable, embed } from '@aws/dynamodb-data-mapper'
 import uuid from 'uuid'
+import config from '../config.json'
 
 export class User {}
 
@@ -17,7 +18,7 @@ Object.defineProperty(UserMetadata.prototype, DynamoDbSchema, {
 
 Object.defineProperties(User.prototype, {
   [DynamoDbTable]: {
-    value: 'Users'
+    value: config.dynamodb.tables.users
   },
   [DynamoDbSchema]: {
     value: {
@@ -37,21 +38,3 @@ Object.defineProperties(User.prototype, {
     }
   }
 })
-// export default dynamoose.model('User', {
-//   id: {
-//     type: Number,
-//     validate: v => v > 0,
-//     hashKey: true
-//   },
-//   email: {
-//     type: String,
-//     validate: v => !!v
-//   },
-//   passwordHash: String,
-//   passwordSalt: String,
-//   verified: {
-//     type: Boolean,
-//     default: false
-//   },
-//   verifyToken: Boolean
-// })
