@@ -47,9 +47,11 @@
     "semi": false
   },
   "dependencies": {
+    "@aws/dynamodb-data-mapper": "^0.6.0",
     "aws-sdk": "^2.262.1",
     "babel-preset-stage-2": "^6.24.1",
     "crypto-promise": "^2.1.0",
+    "node-uuid": "^1.4.8",
     "tensify": "0.0.4"
   }
 }

@@ -1,5 +1,4 @@
 import { computeHash, storeUser } from '../../handlers/register'
-import config from '../../config.json'
 import AWS from 'aws-sdk-mock'
 // import lambdaHandler from '../../handlers/register'
 // import { promisify } from 'util'
@@ -35,7 +34,7 @@ describe('register', () => {
         expect(token).toBeDefined()
         expect(dynamoCalls.length).toBe(1)
         expect(dynamoCalls[0][0]).toBe('putItem')
-        expect(dynamoCalls[0][1].TableName).toBe(config.dynamo.user_table)
+        expect(dynamoCalls[0][1].TableName).toBe('Users')
       })
     })
   })
