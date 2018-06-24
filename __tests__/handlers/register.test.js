@@ -29,8 +29,9 @@ describe('register', () => {
         password
       })
     }
-    let token = await lambda(event, {})
-    expect(token).toBeDefined()
+    let result = await lambda(event, {})
+    expect(result.statusCode).toBe(200)
+    expect(JSON.parse(result.body).token).toBeDefined()
     expect(dynamoCalls.length).toBe(2)
     expect(dynamoCalls[0][0]).toBe('query')
     expect(dynamoCalls[1][0]).toBe('putItem')

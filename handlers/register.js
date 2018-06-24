@@ -12,5 +12,9 @@ export default handler(async function register(event) {
     passwordSalt: salt,
     verifyToken: token
   })
-  return [token]
+  return {
+    body: {
+      token
+    }
+  }
 })
