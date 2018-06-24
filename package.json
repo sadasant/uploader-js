@@ -1,6 +1,6 @@
 {
   "name": "uploader",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Serverless File Uploader",
   "main": "handler.js",
   "scripts": {
