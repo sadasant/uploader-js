@@ -32,3 +32,9 @@ functions:
       - http:
           path: unregister
           method: post
+  verify:
+    handler: handlers.verify
+    events:
+      - http:
+          path: verify
+          method: get
