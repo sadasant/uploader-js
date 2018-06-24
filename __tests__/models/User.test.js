@@ -14,15 +14,14 @@ describe('User', () => {
       dynamoCalls.push(['putItem', params])
       callback(null, 'successfully put item in database')
     })
-    AWS.mock('DynamoDB', 'getItem', function(params, callback) {
-      dynamoCalls.push(['getItem', params])
-      if (params.Key.email.S === duplicatedEmail) {
-        callback(null, {
-          Item: new User()
-        })
-      } else {
-        callback(new Error('Not found error'))
+    AWS.mock('DynamoDB', 'query', async function(params) {
+      dynamoCalls.push(['query', params])
+      if (params.ExpressionAttributeValues[':val1'].S === duplicatedEmail) {
+        return {
+          Items: [new User()]
+        }
       }
+      return {}
     })
   })
   beforeEach(() => {
@@ -37,7 +36,7 @@ describe('User', () => {
         verifyToken: 'token'
       })
       expect(dynamoCalls.length).toBe(2)
-      expect(dynamoCalls[0][0]).toBe('getItem')
+      expect(dynamoCalls[0][0]).toBe('query')
       expect(dynamoCalls[1][0]).toBe('putItem')
       expect(dynamoCalls[1][1].TableName).toBe(config.dynamodb.tables.users)
       expect(Object.keys(dynamoCalls[1][1].Item)).toEqual([
@@ -79,7 +78,7 @@ describe('User', () => {
       expect(errors.length).toBe(1)
       expect(errors[0]).toBe(`The email "${duplicatedEmail}" is already in use`)
       expect(dynamoCalls.length).toBe(1)
-      expect(dynamoCalls[0][0]).toBe('getItem')
+      expect(dynamoCalls[0][0]).toBe('query')
     })
   })
 })

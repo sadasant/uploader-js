@@ -7,7 +7,7 @@
     "test": "jest --testPathIgnorePatterns /node_modules/ --",
     "lint": "eslint '{,!(node_modules)/**/}*.js' *.js",
     "lint-fix": "eslint '{,!(node_modules)/**/}*.js' --fix",
-    "fmt": "prettier --write '{,!(node_modules)/**/}*.js'",
+    "fmt": "prettier --write '{,!(node_modules|coverage)/**/}*.js'",
     "deploy": "sls deploy -f"
   },
   "repository": {
@@ -68,7 +68,6 @@
     "babel-preset-stage-3": "^6.24.1",
     "crypto-promise": "^2.1.0",
     "email-validator": "^2.0.4",
-    "node-uuid": "^1.4.8",
-    "tensify": "0.0.4"
+    "node-uuid": "^1.4.8"
   }
 }

@@ -52,10 +52,9 @@ export async function createUser({
     throw `Invalid Email "${email}"`
   }
   let mapper = new DynamoMapper()
-  let found = await mapper.get(NewUser({ email })).catch(() => {
-    console.info(`Email "${email}" not previously registered`)
-  })
-  if (found) throw `The email "${email}" is already in use`
+  for await (const user of mapper.query(User, { email })) {
+    if (user) throw `The email "${email}" is already in use`
+  }
   let user = NewUser({
     email,
     passwordHash,

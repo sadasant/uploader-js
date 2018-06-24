@@ -12,9 +12,9 @@ describe('register', () => {
       dynamoCalls.push(['putItem', params])
       callback(null, 'successfully put item in database')
     })
-    AWS.mock('DynamoDB', 'getItem', function(params, callback) {
-      dynamoCalls.push(['getItem', params])
-      callback(new Error('Not found error'))
+    AWS.mock('DynamoDB', 'query', async function(params) {
+      dynamoCalls.push(['query', params])
+      return {}
     })
   })
   beforeEach(() => {
@@ -29,14 +29,10 @@ describe('register', () => {
         password
       })
     }
-    let context = {
-      succeed: jest.fn(),
-      fail: jest.fn()
-    }
-    let token = await lambda(event, context)
+    let token = await lambda(event, {})
     expect(token).toBeDefined()
     expect(dynamoCalls.length).toBe(2)
-    expect(dynamoCalls[0][0]).toBe('getItem')
+    expect(dynamoCalls[0][0]).toBe('query')
     expect(dynamoCalls[1][0]).toBe('putItem')
     expect(dynamoCalls[1][1].TableName).toBe(config.dynamodb.tables.users)
   })
