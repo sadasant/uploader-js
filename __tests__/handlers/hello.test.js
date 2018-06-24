@@ -1,6 +1,5 @@
 import lambdaHandler from '../../handlers/hello'
 import { promisify } from 'util'
-import testContext from '../../utils/testContext'
 const lambda = promisify(lambdaHandler)
 
 describe('hello', () => {
@@ -9,7 +8,10 @@ describe('hello', () => {
       let event = {
         body: 'Example Body'
       }
-      let context = testContext()
+      let context = {
+        succeed: jest.fn(),
+        fail: jest.fn()
+      }
       let response = await lambda(event, context)
       expect(response).toEqual({
         statusCode: 200,
@@ -18,8 +20,10 @@ describe('hello', () => {
           input: event
         })
       })
-      expect(context.calls.length).toBe(1)
-      expect(context.calls[0][0]).toBe('succeed')
+      expect(context.succeed.mock.calls.length).toBe(1)
+      expect(context.succeed.mock.calls[0][0]).toEqual({
+        helloed: true
+      })
     })
   })
 })

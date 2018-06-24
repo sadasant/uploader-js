@@ -1,6 +1,7 @@
 import { DynamoDbSchema, DynamoDbTable, embed } from '@aws/dynamodb-data-mapper'
-import uuid from 'uuid'
+import emailValidator from 'email-validator'
 import config from '../config.json'
+import DynamoMapper from '../utils/DynamoMapper'
 
 export class User {}
 
@@ -22,19 +23,46 @@ Object.defineProperties(User.prototype, {
   },
   [DynamoDbSchema]: {
     value: {
-      id: {
+      email: {
         type: 'String',
-        keyType: 'HASH',
-        defaultProvider: uuid.v4
+        keyType: 'HASH'
       },
       createdAt: {
         type: 'Date',
-        keyType: 'RANGE'
+        keyType: 'RANGE',
+        defaultProvider: () => new Date()
       },
-      email: { type: 'String' },
       passwordHash: { type: 'String' },
       passwordSalt: { type: 'String' },
       metadata: embed(UserMetadata)
     }
   }
 })
+
+export const NewUser = obj => Object.assign(new User(), obj)
+export const NewUserMeta = obj => Object.assign(new UserMetadata(), obj)
+
+export async function createUser({
+  email,
+  passwordHash,
+  passwordSalt,
+  verifyToken
+}) {
+  if (!emailValidator.validate(email)) {
+    throw `Invalid Email "${email}"`
+  }
+  let mapper = new DynamoMapper()
+  let found = await mapper.get(NewUser({ email })).catch(() => {
+    console.info(`Email "${email}" not previously registered`)
+  })
+  if (found) throw `The email "${email}" is already in use`
+  let user = NewUser({
+    email,
+    passwordHash,
+    passwordSalt
+  })
+  user.metadata = NewUserMeta({
+    verifyToken
+  })
+  await mapper.put({ item: user })
+}
