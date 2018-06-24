@@ -14,6 +14,7 @@ provider:
         - dynamodb:Scan
         - dynamodb:GetItem
         - dynamodb:PutItem
+        - dynamodb:DeleteItem
       Resource: "*"
 
 functions:
@@ -24,4 +25,10 @@ functions:
     events:
       - http:
           path: register
+          method: post
+  unregister:
+    handler: handlers.unregister
+    events:
+      - http:
+          path: unregister
           method: post
