@@ -1,0 +1,27 @@
+version: 2                                                                                                                                                                                                         
+jobs:
+  build:
+    docker:
+      - image: circleci/node:9
+    steps:
+      - checkout
+      - run:
+          name: install npm@6.0.0                                                                                                                                                                                            command: sudo npm i -g npm@6.0.0                                                                                                                                                                               - run:                                                                                                                                                                                                                 name: install
+          command: npm install
+      - run:
+          name: rebuild
+          command: npm rebuild --update-binary
+      - run:
+          name: lint
+          command: npm run lint
+      - run:
+          name: test
+          command: npm test
+      - run:
+          name: "Changelog needs to be updated"
+          command: git diff-tree --no-commit-id --name-only -r HEAD | sed '/^CHANGELOG.md/q; $q1'
+          when: always
+      - run:
+          name: "package.json version needs to change"
+          command: git diff --no-commit-id -r master package.json | grep '"version":'
+          when: always

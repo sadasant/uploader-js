@@ -1,5 +1,6 @@
 ﻿## 0.0.2
 - Added the verify endpoint.
+- Added CircleCI's configuration.
 
 ## 0.0.1
 - Added the unregister endpoint.
