@@ -6,7 +6,10 @@ jobs:
     steps:
       - checkout
       - run:
-          name: install npm@6.0.0                                                                                                                                                                                            command: sudo npm i -g npm@6.0.0                                                                                                                                                                               - run:                                                                                                                                                                                                                 name: install
+          name: install npm@6.0.0
+          command: sudo npm i -g npm@6.0.0
+      - run:
+          name: install
           command: npm install
       - run:
           name: rebuild
