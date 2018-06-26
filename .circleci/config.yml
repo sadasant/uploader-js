@@ -1,0 +1,26 @@
+version: 2                                                                                                                                                                                                         
+jobs:
+  build:
+    docker:
+      - image: circleci/node:9
+    working_directory: ~/uploader-js
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache
+      - run:
+          name: install
+          command: npm install
+      - save_cache:
+          key: dependency-cache
+          paths:
+            - ./node_modules
+      - run:
+          name: rebuild
+          command: npm rebuild --update-binary
+      - run:
+          name: lint
+          command: npm run lint
+      - run:
+          name: test
+          command: npm test
