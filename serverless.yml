@@ -15,6 +15,7 @@ provider:
         - dynamodb:GetItem
         - dynamodb:PutItem
         - dynamodb:DeleteItem
+        - dynamodb:UpdateItem
       Resource: "*"
 
 functions:
