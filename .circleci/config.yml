@@ -3,14 +3,18 @@ jobs:
   build:
     docker:
       - image: circleci/node:9
+    working_directory: ~/uploader-js
     steps:
       - checkout
-      - run:
-          name: install npm@6.0.0
-          command: sudo npm i -g npm@6.0.0
+      - restore_cache:
+          key: dependency-cache
       - run:
           name: install
           command: npm install
+      - save_cache:
+          key: dependency-cache
+          paths:
+            - ./node_modules
       - run:
           name: rebuild
           command: npm rebuild --update-binary
@@ -20,11 +24,3 @@ jobs:
       - run:
           name: test
           command: npm test
-      - run:
-          name: "Changelog needs to be updated"
-          command: git diff-tree --no-commit-id --name-only -r HEAD | sed '/^CHANGELOG.md/q; $q1'
-          when: always
-      - run:
-          name: "package.json version needs to change"
-          command: git diff --no-commit-id -r master package.json | grep '"version":'
-          when: always
