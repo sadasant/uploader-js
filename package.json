@@ -68,6 +68,9 @@
     "babel-preset-stage-3": "^6.24.1",
     "crypto-promise": "^2.1.0",
     "email-validator": "^2.0.4",
-    "node-uuid": "^1.4.8"
+    "file-type": "^8.0.0",
+    "moment": "^2.22.2",
+    "node-uuid": "^1.4.8",
+    "sanitize-filename": "^1.6.1"
   }
 }

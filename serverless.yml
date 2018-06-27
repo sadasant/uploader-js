@@ -10,13 +10,31 @@ provider:
   iamRoleStatements:
     - Effect: Allow
       Action:
-        - dynamodb:Query
-        - dynamodb:Scan
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:DeleteItem
-        - dynamodb:UpdateItem
+        - "dynamodb:*"
       Resource: "*"
+    - Effect: Allow
+      Action:
+        - "s3:*"
+      Resource: "arn:aws:s3:::uploader-files/*"
+
+resources:
+  Resources:
+    UploadBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: uploader
+        AccessControl: PublicRead
+        CorsConfiguration:
+          CorsRules:
+          - AllowedMethods:
+            - GET
+            - PUT
+            - POST
+            - HEAD
+            AllowedOrigins:
+            - "*"
+            AllowedHeaders:
+            - "*"
 
 functions:
   hello:
@@ -39,3 +57,39 @@ functions:
       - http:
           path: verify
           method: get
+  authenticate:
+    handler: handlers.authenticate
+    events:
+      - http:
+          path: authenticate
+          method: post
+  listUploads:
+    handler: handlers.listUploads
+    events:
+      - http:
+          path: listUploads
+          method: get
+  shareUpload:
+    handler: handlers.shareUpload
+    events:
+      - http:
+          path: shareUpload
+          method: get
+  upload:
+    handler: handlers.upload
+    events:
+      - http:
+          path: upload
+          method: post
+  getUpload:
+    handler: handlers.getUpload
+    events:
+      - http:
+          path: upload
+          method: get
+  removeUpload:
+    handler: handlers.removeUpload
+    events:
+      - http:
+          path: upload
+          method: delete

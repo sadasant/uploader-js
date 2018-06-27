@@ -7,5 +7,10 @@
     "tables": {
       "users": "Uploaders"
     }
+  },
+  "s3": {
+    "buckets": {
+      "files": "uploader-files"
+    }
   }
 }
