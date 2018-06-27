@@ -2,7 +2,11 @@ export default function handlerDeclaration(...handlers) {
   return async function handlerCaller(event, context, callback) {
     try {
       if (typeof event.body === 'string') {
-        event.body = JSON.parse(event.body)
+        try {
+          event.body = JSON.parse(event.body)
+        } catch(e) {
+          console.info('The body was not a valid JSON', event.body)
+        }
       }
       let response
       for (let handler of handlers) {
