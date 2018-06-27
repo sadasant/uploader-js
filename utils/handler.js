@@ -1,7 +1,13 @@
-export default function handlerDeclaration(handler) {
+export default function handlerDeclaration(...handlers) {
   return async function handlerCaller(event, context, callback) {
     try {
-      let response = await handler(event, context)
+      if (typeof event.body === 'string') {
+        event.body = JSON.parse(event.body)
+      }
+      let response
+      for (let handler of handlers) {
+        response = await handler(event, context)
+      }
       if (typeof response === 'string') {
         response = {
           body: {
