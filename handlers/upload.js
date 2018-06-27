@@ -11,7 +11,7 @@ export default handler(checkIn, async function verify(event) {
   let buffer = new Buffer(base64File, 'base64')
   let fileMime = fileType(buffer)
   if (fileMime === null) {
-    throw "The base64File couldn'nt be parsed."
+    throw "The base64File couldn't be parsed"
   }
   let s3 = new AWS.S3()
   let cleanFileName = sanitize(fileName)
@@ -22,8 +22,9 @@ export default handler(checkIn, async function verify(event) {
     // ACL: 'public-read'
   })
   let user = event.user
-  if (!user.files) user.files = []
-  user.files.push(cleanFileName)
+  user.files = JSON.stringify(
+    JSON.parse(user.files || '[]').concat(cleanFileName)
+  )
   let mapper = dynamoMapper()
   await mapper.update(user)
   return 'Upload Successful'

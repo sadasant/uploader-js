@@ -4,7 +4,7 @@ export default function handlerDeclaration(...handlers) {
       if (typeof event.body === 'string') {
         try {
           event.body = JSON.parse(event.body)
-        } catch(e) {
+        } catch (e) {
           console.info('The body was not a valid JSON', event.body)
         }
       }

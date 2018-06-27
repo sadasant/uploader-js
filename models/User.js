@@ -19,7 +19,7 @@ const model = NewModel({
     },
     passwordHash: { type: 'String' },
     passwordSalt: { type: 'String' },
-    files: { type: 'SS' }
+    files: { type: 'String' }
   },
   metadata: {
     verified: {
