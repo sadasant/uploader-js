@@ -11,14 +11,14 @@ export default handler(checkIn, async function verify(event) {
   let buffer = new Buffer(base64File, 'base64')
   let fileMime = fileType(buffer)
   if (fileMime === null) {
-    throw 'The base64File couldn\'nt be parsed.'
+    throw "The base64File couldn'nt be parsed."
   }
   let s3 = new AWS.S3()
   let cleanFileName = sanitize(fileName)
   await s3.putObject({
     Bucket: config.s3.buckets.files,
     Key: cleanFileName,
-    Body: base64File,
+    Body: base64File
     // ACL: 'public-read'
   })
   let user = event.user

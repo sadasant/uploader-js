@@ -13,6 +13,6 @@ export default handler(checkIn, async function verify(event) {
     Bucket: config.s3.buckets.files,
     Key: cleanFileName,
     // moment().diff() results in a millisecond value
-    Expires: moment(expiresAt).diff()/1000
+    Expires: moment(expiresAt).diff() / 1000
   })
 })

@@ -10,6 +10,6 @@ export default handler(checkIn, async function verify(event) {
   let s3 = new AWS.S3()
   return s3.deleteObject({
     Bucket: config.s3.buckets.files,
-    Key: cleanFileName,
+    Key: cleanFileName
   })
 })
