@@ -45,57 +45,73 @@ functions:
       - http:
           path: register
           method: post
+          cors: true
   unregister:
     handler: handlers.unregister
     events:
       - http:
           path: unregister
           method: post
-  removeAccount:
-    handler: handlers.removeAccount
-    events:
-      - http:
-          path: removeAccount
-          method: post
+          cors: true
   verify:
     handler: handlers.verify
     events:
       - http:
           path: verify
           method: get
+          cors: true
   authenticate:
     handler: handlers.authenticate
     events:
       - http:
           path: authenticate
           method: post
+          cors: true
+  removeAccount:
+    handler: handlers.removeAccount
+    events:
+      - http:
+          path: removeAccount
+          method: post
+          cors: true
+          authorizer: authenticate
   listUploads:
     handler: handlers.listUploads
     events:
       - http:
           path: listUploads
           method: get
+          cors: true
+          authorizer: authenticate
   shareUpload:
     handler: handlers.shareUpload
     events:
       - http:
           path: shareUpload
           method: get
+          cors: true
+          authorizer: authenticate
   upload:
     handler: handlers.upload
     events:
       - http:
           path: upload
           method: post
+          cors: true
+          authorizer: authenticate
   getUpload:
     handler: handlers.getUpload
     events:
       - http:
           path: upload
           method: get
+          cors: true
+          authorizer: authenticate
   removeUpload:
     handler: handlers.removeUpload
     events:
       - http:
           path: upload
           method: delete
+          cors: true
+          authorizer: authenticate

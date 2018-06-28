@@ -17,7 +17,17 @@ S3
 - <https://medium.com/@olotintemitope/how-to-upload-files-to-amazon-s3-using-nodejs-lambda-and-api-gateway-bae665127907>
 - <https://stackoverflow.com/questions/38831829/nodejs-aws-sdk-s3-generate-presigned-url>
 
+JWT:
+- <https://yos.io/2017/09/03/serverless-authentication-with-jwt/>
+
 Perhaps obvious things that I'm not including:
+- This app is not very REST-friendly (I think it might be CRUD
+  friendly, but that might be an overstatement).
+- A user interface that would access these endpoints.
 - Files are not stored in a separate table.
 - Multipart uploads.
 - Password recovery.
+
+curl -d '{"email":"sadasant@gmail.com", "password":"value2"}' -H "Content-Type: application/json" -X POST https://rvpujtrb06.execute-api.us-east-1.amazonaws.com/dev/register
+serverless invoke -f register -d '{ "body": "{\"email\":\"sadasant@gmail.com\", \"password\":\"value2\"}" }'
+curl -d '{"email":"sadasant@gmail.com", "password":"value2"}' -H "Content-Type: application/json" -X POST https://rvpujtrb06.execute-api.us-east-1.amazonaws.com/dev/register
