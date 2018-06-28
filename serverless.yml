@@ -22,7 +22,7 @@ resources:
     UploadBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: uploader
+        BucketName: uploader-files
         AccessControl: PublicRead
         CorsConfiguration:
           CorsRules:
@@ -50,6 +50,12 @@ functions:
     events:
       - http:
           path: unregister
+          method: post
+  removeAccount:
+    handler: handlers.removeAccount
+    events:
+      - http:
+          path: removeAccount
           method: post
   verify:
     handler: handlers.verify

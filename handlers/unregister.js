@@ -5,7 +5,7 @@ import { User } from '../models/User'
 export default handler(async function unregister(event) {
   let { email } = event.body
   let mapper = new dynamoMapper()
-  for await (const user of mapper.query(User, { email })) {
+  for await (let user of mapper.query(User, { email })) {
     if (user.metadata.verified) {
       throw `The email "${email}" has been verified`
     }
