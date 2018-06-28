@@ -58,7 +58,7 @@ functions:
     events:
       - http:
           path: verify
-          method: get
+          method: post
           cors: true
   authenticate:
     handler: handlers.authenticate

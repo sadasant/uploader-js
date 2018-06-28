@@ -3,11 +3,12 @@ import checkIn from '../policies/checkIn'
 import dynamoMapper from '../utils/dynamoMapper'
 
 export default handler(checkIn, async function verify(event) {
-  let { email, token } = event.body
+  let { verifyToken } = event.body
   let user = event.user
+  let email = user.email
   if (user.metadata.verified)
     throw `The email "${email}" has already been verified`
-  if (user.metadata.verifyToken !== token) throw "The token doesn't match"
+  if (user.metadata.verifyToken !== verifyToken) throw "The token doesn't match"
   user.metadata.verified = true
   let mapper = dynamoMapper()
   await mapper.update(user)

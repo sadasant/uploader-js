@@ -13,7 +13,7 @@ describe('verify', () => {
   let foundEmails = [verifiedEmail, unverifiedEmail]
 
   let password = 'password'
-  let token = 'token'
+  let verifyToken = 'token'
   let hash
   let salt
 
@@ -33,7 +33,7 @@ describe('verify', () => {
           BOOL: email === verifiedEmail
         },
         verifyToken: {
-          S: token
+          S: verifyToken
         }
       }
     }
@@ -70,7 +70,7 @@ describe('verify', () => {
       body: JSON.stringify({
         email: unverifiedEmail,
         password,
-        token
+        verifyToken
       })
     }
     let result = await lambda(event, {})
@@ -85,12 +85,12 @@ describe('verify', () => {
     expect(dynamoCalls[1][0]).toBe('updateItem')
   })
 
-  it("should throw if the token doesn't match", async () => {
+  it("should throw if the verifyToken doesn't match", async () => {
     let event = {
       body: JSON.stringify({
         email: unverifiedEmail,
         password,
-        token: 'bad token'
+        verifyToken: 'bad token'
       })
     }
     let result = await lambda(event, {})
@@ -105,7 +105,7 @@ describe('verify', () => {
       body: JSON.stringify({
         email: unverifiedEmail,
         password: 'bad password',
-        token
+        verifyToken
       })
     }
     let result = await lambda(event, {})
@@ -120,7 +120,7 @@ describe('verify', () => {
       body: JSON.stringify({
         email: verifiedEmail,
         password,
-        token
+        verifyToken
       })
     }
     let result = await lambda(event, {})
