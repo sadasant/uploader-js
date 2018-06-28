@@ -26,7 +26,10 @@ export default function handlerDeclaration(...handlers) {
       })
     } catch (err) {
       console.error('ERROR', err)
-      callback(err)
+      callback(null, {
+        statusCode: 500,
+        body: err
+      })
     }
   }
 }

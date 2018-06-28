@@ -69,11 +69,9 @@ describe('unregister', () => {
         email: verifiedEmail
       })
     }
-    let error
-    await lambda(event, {}).catch(err => {
-      error = err
-    })
-    expect(error).toBe(`The email "${verifiedEmail}" has been verified`)
+    let result = await lambda(event, {})
+    expect(result.statusCode).toBe(500)
+    expect(result.body).toBe(`The email "${verifiedEmail}" has been verified`)
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
   })

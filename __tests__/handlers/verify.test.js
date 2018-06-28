@@ -93,11 +93,9 @@ describe('verify', () => {
         token: 'bad token'
       })
     }
-    let error
-    await lambda(event, {}).catch(err => {
-      error = err
-    })
-    expect(error).toBe("The token doesn't match")
+    let result = await lambda(event, {})
+    expect(result.statusCode).toBe(500)
+    expect(result.body).toBe("The token doesn't match")
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
   })
@@ -110,11 +108,9 @@ describe('verify', () => {
         token
       })
     }
-    let error
-    await lambda(event, {}).catch(err => {
-      error = err
-    })
-    expect(error).toBe("The password doesn't match")
+    let result = await lambda(event, {})
+    expect(result.statusCode).toBe(500)
+    expect(result.body).toBe("The password doesn't match")
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
   })
@@ -127,11 +123,9 @@ describe('verify', () => {
         token
       })
     }
-    let error
-    await lambda(event, {}).catch(err => {
-      error = err
-    })
-    expect(error).toBe(`The email "${verifiedEmail}" has already been verified`)
+    let result = await lambda(event, {})
+    expect(result.statusCode).toBe(500)
+    expect(result.body).toBe(`The email "${verifiedEmail}" has already been verified`)
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
   })
@@ -142,11 +136,9 @@ describe('verify', () => {
         email: missingEmail
       })
     }
-    let error
-    await lambda(event, {}).catch(err => {
-      error = err
-    })
-    expect(error).toBe(`Email "${missingEmail}" not found`)
+    let result = await lambda(event, {})
+    expect(result.statusCode).toBe(500)
+    expect(result.body).toBe(`Email "${missingEmail}" not found`)
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
   })

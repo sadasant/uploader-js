@@ -71,10 +71,8 @@ describe('getUpload', () => {
         fileName
       })
     }
-    let error
-    await lambda(event, {}).catch(err => {
-      error = err
-    })
-    expect(error).toBe(`The password doesn't match`)
+    let result = await lambda(event, {})
+    expect(result.statusCode).toBe(500)
+    expect(result.body).toBe(`The password doesn't match`)
   })
 })

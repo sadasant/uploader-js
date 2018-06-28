@@ -72,11 +72,9 @@ describe('removeUpload', () => {
         fileName
       })
     }
-    let error
-    await lambda(event, {}).catch(err => {
-      error = err
-    })
-    expect(error).toBe(`The password doesn't match`)
+    let result = await lambda(event, {})
+    expect(result.statusCode).toBe(500)
+    expect(result.body).toBe(`The password doesn't match`)
   })
 
   it("should fail if the user doesn't have this file", async () => {
@@ -87,10 +85,8 @@ describe('removeUpload', () => {
         fileName: 'bad file name'
       })
     }
-    let error
-    await lambda(event, {}).catch(err => {
-      error = err
-    })
-    expect(error).toBe(`The file name "bad file name" was not found`)
+    let result = await lambda(event, {})
+    expect(result.statusCode).toBe(500)
+    expect(result.body).toBe(`The file name "bad file name" was not found`)
   })
 })

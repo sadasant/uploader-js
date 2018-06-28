@@ -82,11 +82,9 @@ describe('upload', () => {
         fileName
       })
     }
-    let error
-    await lambda(event, {}).catch(err => {
-      error = err
-    })
-    expect(error).toBe(`The password doesn't match`)
+    let result = await lambda(event, {})
+    expect(result.statusCode).toBe(500)
+    expect(result.body).toBe(`The password doesn't match`)
   })
 
   it("should fail if the file type can't be recognized", async () => {
@@ -99,10 +97,8 @@ describe('upload', () => {
         fileName
       })
     }
-    let error
-    await lambda(event, {}).catch(err => {
-      error = err
-    })
-    expect(error).toBe(`The base64File couldn't be parsed`)
+    let result = await lambda(event, {})
+    expect(result.statusCode).toBe(500)
+    expect(result.body).toBe(`The base64File couldn't be parsed`)
   })
 })
