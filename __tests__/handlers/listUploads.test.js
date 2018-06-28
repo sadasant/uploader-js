@@ -1,5 +1,3 @@
-import path from 'path'
-import fs from 'fs'
 import AWS from 'aws-sdk-mock'
 import lambdaHandler from '../../handlers/listUploads'
 import { computeHash } from '../../utils/crypto'
