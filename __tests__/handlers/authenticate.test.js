@@ -1,12 +1,12 @@
 import AWS from 'aws-sdk-mock'
-import lambdaHandler from '../../handlers/removeAccount'
+import lambdaHandler from '../../handlers/authenticate'
 import { computeHash } from '../../utils/crypto'
 import { promisify } from 'util'
 const lambda = promisify(lambdaHandler)
 
 let dynamoCalls = []
 
-describe('removeAccount', () => {
+describe('authenticate', () => {
   let email = 'noreply@gmail.com'
   let password = '123IsThisASecurePassword?'
   let salt = 'bae'
@@ -32,17 +32,13 @@ describe('removeAccount', () => {
         ]
       }
     })
-    AWS.mock('DynamoDB', 'deleteItem', async function(params) {
-      dynamoCalls.push(['deleteItem', params])
-      return {}
-    })
   })
 
   beforeEach(() => {
     dynamoCalls = []
   })
 
-  it('should delete the user', async () => {
+  it('should get a token if the credentials are valid', async () => {
     let event = {
       body: JSON.stringify({
         email,
@@ -51,14 +47,37 @@ describe('removeAccount', () => {
     }
     let result = await lambda(event, {})
     expect(result.statusCode).toBe(200)
-    expect(result.body).toEqual(
-      JSON.stringify({
-        message: `User "${email}" successfully removed`
-      })
-    )
-    expect(dynamoCalls.length).toBe(2)
+    expect(JSON.parse(result.body).token).toBeDefined()
+    expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
-    expect(dynamoCalls[1][0]).toBe('deleteItem')
+  })
+
+  it('the token should work to get another token', async () => {
+    // It's silly and recursive but it shows that
+    // the checkIn policy works
+    let event = {
+      body: JSON.stringify({
+        email,
+        password
+      })
+    }
+    let result = await lambda(event, {})
+    expect(result.statusCode).toBe(200)
+    let token = JSON.parse(result.body).token
+    expect(token).toBeDefined()
+    expect(dynamoCalls.length).toBe(1)
+    expect(dynamoCalls[0][0]).toBe('query')
+    event = {
+      body: JSON.stringify({
+        token
+      })
+    }
+    dynamoCalls = []
+    result = await lambda(event, {})
+    expect(result.statusCode).toBe(200)
+    expect(JSON.parse(result.body).token).toBeDefined()
+    expect(dynamoCalls.length).toBe(1)
+    expect(dynamoCalls[0][0]).toBe('query')
   })
 
   it('should fail if the password is invalid', async () => {
@@ -68,10 +87,8 @@ describe('removeAccount', () => {
         password: 'invalid password'
       })
     }
-    let error
-    await lambda(event, {}).catch(err => {
-      error = err
-    })
-    expect(error).toBe(`The password doesn't match`)
+    let result = await lambda(event, {})
+    expect(result.statusCode).toBe(500)
+    expect(result.body).toBe(`The password doesn't match`)
   })
 })

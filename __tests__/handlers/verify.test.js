@@ -125,7 +125,9 @@ describe('verify', () => {
     }
     let result = await lambda(event, {})
     expect(result.statusCode).toBe(500)
-    expect(result.body).toBe(`The email "${verifiedEmail}" has already been verified`)
+    expect(result.body).toBe(
+      `The email "${verifiedEmail}" has already been verified`
+    )
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
   })

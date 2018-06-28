@@ -23,6 +23,7 @@ JWT:
 Perhaps obvious things that I'm not including:
 - This app is not very REST-friendly (I think it might be CRUD
   friendly, but that might be an overstatement).
+- I'm missing configurations based on the deploy environment.
 - A user interface that would access these endpoints.
 - Files are not stored in a separate table.
 - Multipart uploads.

@@ -4,14 +4,13 @@ import jwt from 'jsonwebtoken'
 import config from '../config.json'
 
 export default handler(checkIn, async function authenticate(event) {
-  let { email, password } = event.user
-  let token = jwt.sign({
-    email,
-    password
-  }, config.jwt.secret, {
+  let { email } = event.user
+  let token = jwt.sign({ email }, config.jwt.secret, {
     expiresIn: config.jwt.expiresIn
   })
   return {
-    token
+    body: {
+      token
+    }
   }
 })
