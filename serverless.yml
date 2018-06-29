@@ -53,6 +53,23 @@ functions:
           path: unregister
           method: post
           cors: true
+  getAuthToken:
+    handler: handlers.getAuthToken
+    events:
+      - http:
+          path: getAuthToken
+          method: post
+          cors: true
+  authorize:
+    handler: handlers.authorize
+  getVerifyToken:
+    handler: handlers.getVerifyToken
+    events:
+      - http:
+          path: getVerifyToken
+          method: post
+          cors: true
+          authorizer: ${self:custom.authorizer.authorize}
   verify:
     handler: handlers.verify
     events:
@@ -60,13 +77,7 @@ functions:
           path: verify
           method: post
           cors: true
-  authenticate:
-    handler: handlers.authenticate
-    events:
-      - http:
-          path: authenticate
-          method: post
-          cors: true
+          authorizer: ${self:custom.authorizer.authorize}
   removeAccount:
     handler: handlers.removeAccount
     events:
@@ -74,7 +85,7 @@ functions:
           path: removeAccount
           method: post
           cors: true
-          authorizer: authenticate
+          authorizer: ${self:custom.authorizer.authorize}
   listUploads:
     handler: handlers.listUploads
     events:
@@ -82,7 +93,7 @@ functions:
           path: listUploads
           method: get
           cors: true
-          authorizer: authenticate
+          authorizer: ${self:custom.authorizer.authorize}
   shareUpload:
     handler: handlers.shareUpload
     events:
@@ -90,7 +101,7 @@ functions:
           path: shareUpload
           method: get
           cors: true
-          authorizer: authenticate
+          authorizer: ${self:custom.authorizer.authorize}
   upload:
     handler: handlers.upload
     events:
@@ -98,7 +109,7 @@ functions:
           path: upload
           method: post
           cors: true
-          authorizer: authenticate
+          authorizer: ${self:custom.authorizer.authorize}
   getUpload:
     handler: handlers.getUpload
     events:
@@ -106,7 +117,7 @@ functions:
           path: upload
           method: get
           cors: true
-          authorizer: authenticate
+          authorizer: ${self:custom.authorizer.authorize}
   removeUpload:
     handler: handlers.removeUpload
     events:
@@ -114,4 +125,11 @@ functions:
           path: upload
           method: delete
           cors: true
-          authorizer: authenticate
+          authorizer: ${self:custom.authorizer.authorize}
+
+custom:
+  authorizer:
+    authorize:
+      name: authorize
+      type: TOKEN
+      identitySource: method.request.header.Authorization

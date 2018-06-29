@@ -10,4 +10,6 @@ export const shareUpload = require('./handlers/shareUpload').default
 export const upload = require('./handlers/upload').default
 export const getUpload = require('./handlers/getUpload').default
 export const removeUpload = require('./handlers/removeUpload').default
-export const authenticate = require('./handlers/authenticate').default
+export const authorize = require('./handlers/authorize').default
+export const getAuthToken = require('./handlers/getAuthToken').default
+export const getVerifyToken = require('./handlers/getVerifyToken').default

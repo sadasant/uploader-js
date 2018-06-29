@@ -1,35 +1,48 @@
+import { internalServerError } from './httpCodes'
+
 export default function handlerDeclaration(...handlers) {
-  return async function handlerCaller(event, context, callback) {
-    try {
-      if (typeof event.body === 'string') {
-        try {
-          event.body = JSON.parse(event.body)
-        } catch (e) {
-          console.info('The body was not a valid JSON', event.body)
-        }
+  return async function handlerCaller(event, context) {
+    // Let's make sure the body is an object.
+    // It is probably safe to assume that if we receive
+    // a body it will be a string, but I'd rather not
+    // think about the alternative.
+    if (typeof event.body === 'string') {
+      try {
+        event.body = JSON.parse(event.body)
+      } catch (e) {
+        console.info('The body was not a valid JSON', event.body)
       }
-      let response
-      for (let handler of handlers) {
+    }
+
+    let response
+    for (let handler of handlers) {
+      try {
         response = await handler(event, context)
+      } catch (e) {
+        if (event.methodArn) {
+          return context.fail(e)
+        }
+        return internalServerError(e.message || e)
       }
-      if (typeof response === 'string') {
-        response = {
-          body: {
-            message: response
-          }
+      if (response) break
+    }
+
+    if (typeof response === 'string') {
+      response = {
+        body: {
+          message: response
         }
       }
-      callback(null, {
-        statusCode: 200,
-        ...response,
-        body: JSON.stringify(response.body || {})
-      })
-    } catch (err) {
-      console.error('ERROR', err)
-      callback(null, {
-        statusCode: 500,
-        body: err
-      })
+    }
+
+    if (event.methodArn) {
+      return context.succeed(response)
+    }
+
+    return {
+      statusCode: 200,
+      ...response,
+      body: JSON.stringify(response.body || {})
     }
   }
 }
