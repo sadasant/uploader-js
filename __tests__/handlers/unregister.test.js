@@ -1,7 +1,6 @@
 import AWS from 'aws-sdk-mock'
-import lambdaHandler from '../../handlers/unregister'
-import { promisify } from 'util'
-const lambda = promisify(lambdaHandler)
+import lambda from '../../handlers/unregister'
+import { newUserItem } from '../testUtils'
 
 let dynamoCalls = []
 
@@ -10,6 +9,7 @@ describe('unregister', () => {
   let unverifiedEmail = 'unverified@email.com'
   let missingEmail = 'missing@email.com'
   let foundEmails = [verifiedEmail, unverifiedEmail]
+  let password = 'password'
 
   beforeAll(() => {
     AWS.mock('DynamoDB', 'query', async function(params) {
@@ -18,18 +18,11 @@ describe('unregister', () => {
       if (foundEmails.includes(email)) {
         return {
           Items: [
-            {
-              email: {
-                S: email
-              },
-              metadata: {
-                M: {
-                  verified: {
-                    BOOL: email === verifiedEmail
-                  }
-                }
-              }
-            }
+            await newUserItem({
+              email,
+              password,
+              verified: email === verifiedEmail
+            })
           ]
         }
       }
@@ -70,8 +63,12 @@ describe('unregister', () => {
       })
     }
     let result = await lambda(event, {})
-    expect(result.statusCode).toBe(500)
-    expect(result.body).toBe(`The email "${verifiedEmail}" has been verified`)
+    expect(result.statusCode).toBe(409)
+    expect(result.body).toEqual(
+      JSON.stringify({
+        message: `The email "${verifiedEmail}" has been verified`
+      })
+    )
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
   })
@@ -83,7 +80,7 @@ describe('unregister', () => {
       })
     }
     let result = await lambda(event, {})
-    expect(result.statusCode).toBe(200)
+    expect(result.statusCode).toBe(404)
     expect(result.body).toEqual(
       JSON.stringify({
         message: `Email "${missingEmail}" not found`

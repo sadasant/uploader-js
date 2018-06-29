@@ -25,7 +25,8 @@ export async function newUserItem({
     hash = result.hash
     salt = result.salt
   }
-  return {
+
+  let user = {
     email: {
       S: email
     },
@@ -35,9 +36,11 @@ export async function newUserItem({
     passwordSalt: {
       S: salt
     },
-    files: files ? {
-      S: JSON.stringify(files)
-    } : undefined,
+    files: files
+      ? {
+          S: JSON.stringify(files)
+        }
+      : undefined,
     verified: {
       BOOL: verified
     },
@@ -45,4 +48,12 @@ export async function newUserItem({
       S: verifyToken
     }
   }
+
+  // Would love to use a more functional approach, but I haven't found
+  // sufficient excuse to add a functional library.
+  for (let k of Object.keys(user)) {
+    if (user[k] === undefined) delete user[k]
+  }
+
+  return user
 }

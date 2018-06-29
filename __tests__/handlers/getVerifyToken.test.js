@@ -5,7 +5,6 @@ import { newUserItem } from '../testUtils'
 let dynamoCalls = []
 
 describe('getVerifyToken', () => {
-  let missingEmail = 'missing@email.com'
   let foundEmail = 'found@email.com'
   let password = 'password'
   let verifyToken = 'verifyToken'
@@ -39,17 +38,5 @@ describe('getVerifyToken', () => {
     expect(JSON.parse(result.body).verifyToken).toBeDefined()
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
-  })
-
-  it('should not work if the email is not found', async () => {
-    let event = {
-      body: JSON.stringify({
-        email: missingEmail,
-        password
-      })
-    }
-    let result = await lambda(event, {})
-    expect(result.statusCode).toBe(500)
-    expect(JSON.parse(result.body).message).toBe('Unauthorized')
   })
 })

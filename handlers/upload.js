@@ -5,14 +5,17 @@ import dynamoMapper from '../utils/dynamoMapper'
 import handler from '../utils/handler'
 import checkIn from '../policies/checkIn'
 import config from '../config.json'
+import { badRequest } from '../utils/httpCodes'
 
-export default handler(checkIn, async function verify(event) {
+export default handler(checkIn, async event => {
   let { base64File, fileName } = event.body
+
   let buffer = new Buffer(base64File, 'base64')
   let fileMime = fileType(buffer)
   if (fileMime === null) {
-    throw "The base64File couldn't be parsed"
+    return badRequest("The base64File couldn't be parsed")
   }
+
   let s3 = new AWS.S3()
   let cleanFileName = sanitize(fileName)
   await s3.putObject({
@@ -21,10 +24,12 @@ export default handler(checkIn, async function verify(event) {
     Body: base64File
     // ACL: 'public-read'
   })
+
   let user = event.user
   user.files = JSON.stringify(
     JSON.parse(user.files || '[]').concat(cleanFileName)
   )
+
   let mapper = dynamoMapper()
   await mapper.update(user)
   return 'Upload Successful'

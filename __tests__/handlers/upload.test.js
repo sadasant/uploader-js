@@ -1,17 +1,15 @@
 import path from 'path'
 import fs from 'fs'
 import AWS from 'aws-sdk-mock'
-import lambdaHandler from '../../handlers/upload'
-import { computeHash } from '../../utils/crypto'
-import { promisify } from 'util'
-const lambda = promisify(lambdaHandler)
+import lambda from '../../handlers/upload'
+import { newUserItem, authorizer } from '../testUtils'
+const authorizedLambda = authorizer(lambda)
 
 let dynamoCalls = []
 
 describe('upload', () => {
   let email = 'noreply@gmail.com'
   let password = '123IsThisASecurePassword?'
-  let salt = 'bae'
   let fileName = 'My File Name (1).ppt'
   let base64File = fs.readFileSync(
     path.resolve(`${__dirname}/../../misc/isThisAFunMeme.jpg`)
@@ -21,20 +19,12 @@ describe('upload', () => {
     AWS.mock('DynamoDB', 'query', async function(params) {
       dynamoCalls.push(['query', params])
       let email = params.ExpressionAttributeValues[':val1'].S
-      let { hash } = await computeHash(password, salt)
       return {
         Items: [
-          {
-            email: {
-              S: email
-            },
-            passwordHash: {
-              S: hash
-            },
-            passwordSalt: {
-              S: salt
-            }
-          }
+          await newUserItem({
+            email,
+            password
+          })
         ]
       }
     })
@@ -59,32 +49,15 @@ describe('upload', () => {
         fileName
       })
     }
-    let result = await lambda(event, {})
+    let result = await authorizedLambda(event, {})
     expect(result.statusCode).toBe(200)
-    expect(JSON.parse(result.body).message).toEqual('Upload Successful')
+    expect(result.body.message).toBe('Upload Successful')
     expect(dynamoCalls.length).toBe(2)
     expect(dynamoCalls[0][0]).toBe('query')
     expect(dynamoCalls[1][0]).toBe('updateItem')
-    expect(dynamoCalls[1][1].ExpressionAttributeNames['#attr6']).toBe(
-      'metadata'
-    )
     expect(dynamoCalls[1][1].ExpressionAttributeValues[':val5']).toEqual({
       S: `["${fileName}"]`
     })
-  })
-
-  it('should fail if the password is invalid', async () => {
-    let event = {
-      body: JSON.stringify({
-        email,
-        password: 'invalid password',
-        base64File,
-        fileName
-      })
-    }
-    let result = await lambda(event, {})
-    expect(result.statusCode).toBe(500)
-    expect(result.body).toBe(`The password doesn't match`)
   })
 
   it("should fail if the file type can't be recognized", async () => {
@@ -97,8 +70,10 @@ describe('upload', () => {
         fileName
       })
     }
-    let result = await lambda(event, {})
-    expect(result.statusCode).toBe(500)
-    expect(result.body).toBe(`The base64File couldn't be parsed`)
+    let result = await authorizedLambda(event, {})
+    expect(result.statusCode).toBe(400)
+    expect(result.body).toEqual({
+      message: `The base64File couldn't be parsed`
+    })
   })
 })

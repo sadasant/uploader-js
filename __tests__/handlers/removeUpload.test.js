@@ -1,8 +1,7 @@
 import AWS from 'aws-sdk-mock'
-import lambdaHandler from '../../handlers/removeUpload'
-import { computeHash } from '../../utils/crypto'
-import { promisify } from 'util'
-const lambda = promisify(lambdaHandler)
+import lambda from '../../handlers/removeUpload'
+import { newUserItem, authorizer } from '../testUtils'
+const authorizedLambda = authorizer(lambda)
 
 let dynamoCalls = []
 let s3Calls = []
@@ -11,29 +10,19 @@ describe('removeUpload', () => {
   let email = 'noreply@gmail.com'
   let password = '123IsThisASecurePassword?'
   let fileName = 'My File Name (1).ppt'
-  let salt = 'bae'
+  let badFileName = 'bad file name'
 
   beforeAll(() => {
     AWS.mock('DynamoDB', 'query', async function(params) {
       dynamoCalls.push(['query', params])
       let email = params.ExpressionAttributeValues[':val1'].S
-      let { hash } = await computeHash(password, salt)
       return {
         Items: [
-          {
-            email: {
-              S: email
-            },
-            passwordHash: {
-              S: hash
-            },
-            passwordSalt: {
-              S: salt
-            },
-            files: {
-              S: JSON.stringify([fileName])
-            }
-          }
+          await newUserItem({
+            email,
+            password,
+            files: [fileName]
+          })
         ]
       }
     })
@@ -56,7 +45,7 @@ describe('removeUpload', () => {
         fileName
       })
     }
-    let result = await lambda(event, {})
+    let result = await authorizedLambda(event, {})
     expect(result.statusCode).toBe(200)
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
@@ -64,29 +53,18 @@ describe('removeUpload', () => {
     expect(s3Calls[0][0]).toBe('deleteObject')
   })
 
-  it('should fail if the password is invalid', async () => {
-    let event = {
-      body: JSON.stringify({
-        email,
-        password: 'invalid password',
-        fileName
-      })
-    }
-    let result = await lambda(event, {})
-    expect(result.statusCode).toBe(500)
-    expect(result.body).toBe(`The password doesn't match`)
-  })
-
   it("should fail if the user doesn't have this file", async () => {
     let event = {
       body: JSON.stringify({
         email,
         password,
-        fileName: 'bad file name'
+        fileName: badFileName
       })
     }
-    let result = await lambda(event, {})
-    expect(result.statusCode).toBe(500)
-    expect(result.body).toBe(`The file name "bad file name" was not found`)
+    let result = await authorizedLambda(event, {})
+    expect(result.statusCode).toBe(404)
+    expect(result.body).toEqual({
+      message: `The file "${badFileName}" was not found`
+    })
   })
 })

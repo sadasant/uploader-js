@@ -12,7 +12,7 @@ export default handler(checkIn, async event => {
     return conflict(`The email "${email}" has already been verified`)
 
   if (user.verifyToken !== verifyToken)
-    return forbidden(`The token doesn't match`) 
+    return forbidden(`The token doesn't match`)
   user.verified = true
   let mapper = dynamoMapper()
   await mapper.update(user)

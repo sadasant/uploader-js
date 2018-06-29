@@ -6,6 +6,7 @@ export const statusBody = statusCode => message => ({
 })
 
 export const ok = statusBody(200)
+export const noContent = statusBody(204)
 export const badRequest = statusBody(400)
 export const unauthorized = statusBody(401)
 export const forbidden = statusBody(403)

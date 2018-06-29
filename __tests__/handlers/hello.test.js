@@ -1,6 +1,4 @@
-import lambdaHandler from '../../handlers/hello'
-import { promisify } from 'util'
-const lambda = promisify(lambdaHandler)
+import lambda from '../../handlers/hello'
 
 describe('hello', () => {
   it('returns what was given', async () => {
