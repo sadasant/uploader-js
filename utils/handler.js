@@ -19,6 +19,7 @@ export default function handlerDeclaration(...handlers) {
       try {
         response = await handler(event, context)
       } catch (e) {
+        console.info('Handler Error', e)
         if (event.methodArn) {
           return context.fail(e)
         }

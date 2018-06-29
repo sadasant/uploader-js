@@ -5,7 +5,8 @@ import { computeHash } from '../utils/crypto'
 
 export default async event => {
   if (event.user) return
-  let token = event.authorizationToken || (event.headers && event.headers.Authorization)
+  let token =
+    event.authorizationToken || (event.headers && event.headers.Authorization)
 
   // If we received a token, let's try to verify it
   if (token) {
