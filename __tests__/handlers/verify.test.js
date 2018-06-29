@@ -13,7 +13,7 @@ describe('verify', () => {
   let foundEmails = [verifiedEmail, unverifiedEmail]
 
   let password = 'password'
-  let token = 'token'
+  let verifyToken = 'token'
   let hash
   let salt
 
@@ -33,7 +33,7 @@ describe('verify', () => {
           BOOL: email === verifiedEmail
         },
         verifyToken: {
-          S: token
+          S: verifyToken
         }
       }
     }
@@ -70,7 +70,7 @@ describe('verify', () => {
       body: JSON.stringify({
         email: unverifiedEmail,
         password,
-        token
+        verifyToken
       })
     }
     let result = await lambda(event, {})
@@ -85,19 +85,17 @@ describe('verify', () => {
     expect(dynamoCalls[1][0]).toBe('updateItem')
   })
 
-  it("should throw if the token doesn't match", async () => {
+  it("should throw if the verifyToken doesn't match", async () => {
     let event = {
       body: JSON.stringify({
         email: unverifiedEmail,
         password,
-        token: 'bad token'
+        verifyToken: 'bad token'
       })
     }
-    let error
-    await lambda(event, {}).catch(err => {
-      error = err
-    })
-    expect(error).toBe("The token doesn't match")
+    let result = await lambda(event, {})
+    expect(result.statusCode).toBe(500)
+    expect(result.body).toBe("The token doesn't match")
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
   })
@@ -107,14 +105,12 @@ describe('verify', () => {
       body: JSON.stringify({
         email: unverifiedEmail,
         password: 'bad password',
-        token
+        verifyToken
       })
     }
-    let error
-    await lambda(event, {}).catch(err => {
-      error = err
-    })
-    expect(error).toBe("The password doesn't match")
+    let result = await lambda(event, {})
+    expect(result.statusCode).toBe(500)
+    expect(result.body).toBe("The password doesn't match")
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
   })
@@ -124,14 +120,14 @@ describe('verify', () => {
       body: JSON.stringify({
         email: verifiedEmail,
         password,
-        token
+        verifyToken
       })
     }
-    let error
-    await lambda(event, {}).catch(err => {
-      error = err
-    })
-    expect(error).toBe(`The email "${verifiedEmail}" has already been verified`)
+    let result = await lambda(event, {})
+    expect(result.statusCode).toBe(500)
+    expect(result.body).toBe(
+      `The email "${verifiedEmail}" has already been verified`
+    )
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
   })
@@ -142,11 +138,9 @@ describe('verify', () => {
         email: missingEmail
       })
     }
-    let error
-    await lambda(event, {}).catch(err => {
-      error = err
-    })
-    expect(error).toBe(`Email "${missingEmail}" not found`)
+    let result = await lambda(event, {})
+    expect(result.statusCode).toBe(500)
+    expect(result.body).toBe(`Email "${missingEmail}" not found`)
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
   })

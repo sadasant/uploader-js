@@ -1,7 +1,17 @@
-export default function handlerDeclaration(handler) {
+export default function handlerDeclaration(...handlers) {
   return async function handlerCaller(event, context, callback) {
     try {
-      let response = await handler(event, context)
+      if (typeof event.body === 'string') {
+        try {
+          event.body = JSON.parse(event.body)
+        } catch (e) {
+          console.info('The body was not a valid JSON', event.body)
+        }
+      }
+      let response
+      for (let handler of handlers) {
+        response = await handler(event, context)
+      }
       if (typeof response === 'string') {
         response = {
           body: {
@@ -16,7 +26,10 @@ export default function handlerDeclaration(handler) {
       })
     } catch (err) {
       console.error('ERROR', err)
-      callback(err)
+      callback(null, {
+        statusCode: 500,
+        body: err
+      })
     }
   }
 }

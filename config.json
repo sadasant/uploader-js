@@ -7,5 +7,14 @@
     "tables": {
       "users": "Uploaders"
     }
+  },
+  "s3": {
+    "buckets": {
+      "files": "uploader-files"
+    }
+  },
+  "jwt": {
+    "secret": "I still want to rewrite this in go, I wonder if it will be as beautiful as I think it might be. Will we ever know?",
+    "expiresIn": "1h"
   }
 }
