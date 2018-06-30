@@ -1,7 +1,7 @@
 ﻿## Fancy Uploader In JavaScript
 
-Here's a fully working MVP for a file uploader that
-I did to **learn about serverless** while taking advantage of
+Here's a fully working MVP for a **file uploader** that
+I did to **learn about serverless**, while taking advantage of
 technologies that I already know and appreciate, like
 _TDD, Webpack, Babel & Jest_. It was a bit challenging since I'm more
 familiar with frameworks like Sails, Feathers, Express & Koa, where
@@ -65,7 +65,9 @@ account:
 10. Give it `AmazonS3FullAccess`.
 11. Give it `AWSLambdaFullAccess`.
 
-Now you're ready for the terminal.
+Now, you're ready for the terminal.
+
+![](https://i.imgur.com/zqukkvr.gif)
 
 ### Installing the dependencies
 
