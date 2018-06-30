@@ -101,13 +101,6 @@ functions:
           method: get
           cors: true
           authorizer: ${self:custom.authorizer.authorize}
-          request:
-            template:
-              application/json: >
-                {
-                  "fileName" : "$input.params('fileName')",
-                  "expiresAt": "$input.params('expiresAt')"
-                }
   upload:
     handler: handlers.upload
     events:

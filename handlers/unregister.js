@@ -3,7 +3,7 @@ import dynamoMapper from '../utils/dynamoMapper'
 import { User } from '../models/User'
 import { conflict, notFound } from '../utils/httpCodes'
 
-export default handler(async function unregister(event) {
+export default handler(async event => {
   let { email } = event.body
   let mapper = new dynamoMapper()
   for await (let user of mapper.query(User, { email })) {
