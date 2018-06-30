@@ -11,21 +11,31 @@ This file uploader has the following features:
 - Users can list their uploads, and remove them.
 - Users can also generate temporary links to access these files.
 
-![](https://i.imgur.com/lkEd8L4.gif)
+![](https://i.imgur.com/Vj0mKLe.gif)
 
 Here is a list of features that are probably only important for
 developers:
-- It's built on NodeJS 💐
-- It uses the latest Babel & EcmaScript features I could find at the
+- It's built with NodeJS 💐
+- It uses the latest EcmaScript features I could think of at the
   moment.
 - It's fully **unit tested** 💪
-- It is stored on AWS using serverless. sls super cool 😎
-- It uses Prettier and Eslint, so no ugly code on sight!
-- It runs lint and test validations on CircleCI on pull requests!
+- It desploys on AWS using serverless, using as many severless features
+  I could come up with in a reasonable time span.
+  sls **is** super cool 😎
+- It uses Prettier and Eslint, so no ugly code on sight 😍
+- It runs lint and test validations on CircleCI on pull requests.
+
+## Index
+
+- [How to build](#how-to-build)
+  - [Gettting in the console](#getting-in-the-console)
+  - [Installing the dependencies](#installing-the-dependencies)
+  - [Initializing the repository](#initializing-the-repository)
+- [I want to try it now!](#i-want-to-try-it-now)
 
 ## How to build
 
-### Getting in the Console
+### Getting in the console
 
 The first step is actually not with the repo, but with your AWS
 account:
@@ -43,7 +53,7 @@ account:
 
 Now you're ready for the terminal.
 
-### Installing Dependencies
+### Installing the dependencies
 
 You'll need NodeJS. So far, I like using
 [nvm](https://github.com/creationix/nvm) since it gives you the
@@ -67,7 +77,7 @@ the user you just created.
 After that, I highly recommend reading the serverless CLI reference (I
 tend to forget commands, even the most used ones): <https://serverless.com/framework/docs/providers/azure/cli-reference/>
 
-### Repository Initialization
+### Initializing the repository
 
 You can do it this way:
 ```
