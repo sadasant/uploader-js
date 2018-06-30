@@ -3,6 +3,14 @@ import dynamoMapper from '../utils/dynamoMapper'
 import { User } from '../models/User'
 import { conflict, notFound } from '../utils/httpCodes'
 
+// POST to unregister with:
+//   { email: String }
+//
+// Results with a body in the shape of:
+//   { message: String }
+//
+// Removes an unverified user from the database.
+//
 export default handler(async event => {
   let { email } = event.body
   let mapper = new dynamoMapper()

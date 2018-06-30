@@ -3,6 +3,15 @@ import checkIn from '../policies/checkIn'
 import jwt from 'jsonwebtoken'
 import config from '../config.json'
 
+// POST to getAuthToken with:
+//   { user: String, password: String }
+//
+// Results with a Body in the shape of:
+//   { token: String }
+//
+// Once the received credentials are validated,
+// returns a new signed JWT token.
+//
 export default handler(checkIn, async event => {
   let { email } = event.user
 

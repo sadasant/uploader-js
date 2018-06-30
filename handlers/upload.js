@@ -6,6 +6,17 @@ import checkIn from '../policies/checkIn'
 import { badRequest, conflict } from '../utils/httpCodes'
 import { uploadFile } from '../utils/s3'
 
+// POST to upload with:
+//   { fileName: String, base64File: String }
+// With headers:
+//   Authorization: Authorization Token
+//
+// Results with a body in the shape of:
+//   { message: String }
+//
+// Once the received credentials are validated,
+// saves the base64File in Amazon S3.
+//
 export default handler(checkIn, async event => {
   let { base64File, fileName } = event.body
 

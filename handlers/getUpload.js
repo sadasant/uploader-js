@@ -4,6 +4,18 @@ import { downloadFile } from '../utils/s3'
 import checkIn from '../policies/checkIn'
 import { notFound } from '../utils/httpCodes'
 
+// POST to getUpload with:
+//   { fileName: String }
+// With headers:
+//   Authorization: Authorization Token
+//
+// Results with a body in the shape of:
+//   { base64File: String }
+//
+// Once the received credentials are validated,
+// returns a base64 encoded version of the requested
+// file.
+//
 export default handler(checkIn, async event => {
   let { fileName } = event.queryStringParameters
 

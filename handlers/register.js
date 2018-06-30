@@ -6,6 +6,15 @@ import { badRequest, conflict } from '../utils/httpCodes'
 import dynamoMapper from '../utils/dynamoMapper'
 import { make } from '../utils/lang'
 
+// POST to register with:
+//   { user: String, password: String }
+//
+// Results with a body in the shape of:
+//   { verifyToken: String }
+//
+// Creates a new user in the database
+// and returns a verification token.
+//
 export default handler(async event => {
   let { email, password } = event.body
 

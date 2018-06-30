@@ -5,6 +5,19 @@ import checkIn from '../policies/checkIn'
 import { notFound } from '../utils/httpCodes'
 import { removeFile } from '../utils/s3'
 
+// DELETE to removeUpload
+// With a query object similar  to:
+//   ?fileName=String
+//
+// With headers:
+//   Authorization: Authorization Token
+//
+// Results with a body in the shape of:
+//   { message: String }
+//
+// Once the received credentials are validated,
+// removes the requested file.
+//
 export default handler(checkIn, async event => {
   let { fileName } = event.queryStringParameters
   let user = event.user

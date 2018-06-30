@@ -5,6 +5,18 @@ import checkIn from '../policies/checkIn'
 import { notFound } from '../utils/httpCodes'
 import { shareFile } from '../utils/s3'
 
+// GET to shareUpload with:
+//   { fileName: String, expiresAt: Date, Number (seconds) or any valid date String }
+// With headers:
+//   Authorization: Authorization Token
+//
+// Results with a body in the shape of:
+//   { url: String }
+//
+// Once the received credentials are validated,
+// generates a pre-signed link. By default, this link will
+// be active for one day.
+//
 export default handler(checkIn, async event => {
   let oneDay = 60 * 60 * 24
   let { fileName, expiresAt = oneDay } = event.queryStringParameters
