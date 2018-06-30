@@ -3,6 +3,21 @@ import config from '../config.json'
 import { findUser } from '../models/User'
 import { computeHash } from '../utils/crypto'
 
+// checkIn,
+// Our Authentication / User Retrieval policy
+//
+// This is a function that does one of two things:
+// 1. Either validates the received authorizationToken,
+// 2. Or tries to use the received user and password from the event's body.
+//
+// In both schenarios, once the data is received and is confirmed to be correct,
+// this function assigns the found (and verified) user to the event object as the
+// user property.
+//
+// If anything bad happens, this function throws "Unauthorized".
+// I couldn't make it send back more verbose errors, and apparently other people
+// have been experiencing the same: https://www.npmjs.com/package/file-type#supported-file-types
+//
 export default async event => {
   if (event.user) return
   let token =

@@ -1,6 +1,10 @@
 import crypto from 'crypto-promise'
 import config from '../config.json'
 
+// computeHash will encrypt the given sting with
+// the given salt, using PBKDF2.
+// This code is inspired by https://github.com/danilop/LambdAuth
+//
 export async function computeHash(str, salt) {
   let { byte_size, iterations } = config.crypto
 
