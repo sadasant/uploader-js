@@ -28,8 +28,8 @@ export default handler(async event => {
     let mapper = dynamoMapper()
     await mapper.put({ item: user })
   } catch (e) {
-    console.info(`Failed to create user "${email}"`, e)
-    return badRequest(e.message)
+    console.info(`Failed to create user "${email}"`, e.message)
+    throw `Failed to create user "${email}"`
   }
 
   return {

@@ -15,7 +15,10 @@ const model = NewModel({
     },
     passwordHash: { type: 'String' },
     passwordSalt: { type: 'String' },
-    files: { type: 'String' },
+    files: {
+      type: 'String',
+      defaultProvider: () => '[]'
+    },
     verified: {
       type: 'Boolean',
       defaultProvider: () => false

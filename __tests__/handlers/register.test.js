@@ -10,12 +10,9 @@ describe('register', () => {
   let foundEmail = 'found@email.com'
   let badEmail = 'bad email'
   let password = 'password'
+  let failUserCreation = false
 
   beforeAll(() => {
-    AWS.mock('DynamoDB', 'putItem', function(params, callback) {
-      dynamoCalls.push(['putItem', params])
-      callback(null, 'successfully put item in database')
-    })
     AWS.mock('DynamoDB', 'query', async function(params) {
       dynamoCalls.push(['query', params])
       let email = params.ExpressionAttributeValues[':val1'].S
@@ -26,10 +23,19 @@ describe('register', () => {
       }
       return {}
     })
+    AWS.mock('DynamoDB', 'putItem', function(params, callback) {
+      dynamoCalls.push(['putItem', params])
+      if (failUserCreation) {
+        callback(new Error('S3 is Down'))
+      } else {
+        callback(null, 'successfully put item in database')
+      }
+    })
   })
 
   beforeEach(() => {
     dynamoCalls = []
+    failUserCreation = false
   })
 
   it('should put an item in the configured DynamoDB table', async () => {
@@ -51,6 +57,7 @@ describe('register', () => {
       'createdAt',
       'passwordHash',
       'passwordSalt',
+      'files',
       'verified',
       'verifyToken'
     ])
@@ -83,5 +90,23 @@ describe('register', () => {
     )
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
+  })
+
+  it('should give the proper error message if the user creation fails', async () => {
+    failUserCreation = true
+    let event = {
+      body: JSON.stringify({
+        email: newEmail,
+        password
+      })
+    }
+    let result = await lambda(event, {})
+    expect(result.statusCode).toBe(500)
+    expect(result.body.message).toBe(
+      `Failed to create user "${newEmail}"`
+    )
+    expect(dynamoCalls.length).toBe(2)
+    expect(dynamoCalls[0][0]).toBe('query')
+    expect(dynamoCalls[1][0]).toBe('putItem')
   })
 })
