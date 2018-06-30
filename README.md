@@ -21,8 +21,7 @@ developers:
   moment.
 - It's fully **unit tested** 💪
 - As much documentation as possible.
-- It desploys on AWS using serverless, using as many severless features
-  as I could come up within a reasonable time span.
+- It desploys on AWS using serverless.
 - It uses Prettier and Eslint, so no ugly code on sight 😍
 - It runs lint and test validations on CircleCI on pull requests.
 
