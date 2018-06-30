@@ -384,7 +384,10 @@ put attention on several important things. Here's a list:
   😬 🔒 ☠️
 - I'm missing a user interface 🙈 I hope the fact that I'm using
   webpack highlights that I know a fair bit about building user
-  interfaces.
+  interfaces. I'm not saying that using webpack makes you be good at
+  building user interfaces (one doesn't imply the other), I'm just
+  saying I've built a bunch and I will keep building them, just
+  probably not for this project 😬
 
 ![](https://i.imgur.com/hjofzYI.gif)
 
