@@ -1,8 +1,8 @@
 ﻿## Fancy Uploader In JavaScript
 
-Here's a fully working MVP for a file uploader.  
-I did it to **learn about serverless**, while taking advantage of
-things that I already know and appreciate using, like
+Here's a fully working MVP for a file uploader that
+I did it to **learn about serverless** while taking advantage of
+technologies that I already know and appreciate, like
 _TDD, Webpack, Babel & Jest_.
 
 This file uploader has the following features:
