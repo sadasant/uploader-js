@@ -1,9 +1,13 @@
 ﻿## Fancy Uploader In JavaScript
 
 Here's a fully working MVP for a file uploader that
-I did it to **learn about serverless** while taking advantage of
+I did to **learn about serverless** while taking advantage of
 technologies that I already know and appreciate, like
-_TDD, Webpack, Babel & Jest_.
+_TDD, Webpack, Babel & Jest_. It was a bit challenging since I'm more
+familiar with frameworks like Sails, Feathers, Express & Koa, where
+you have to either provide the server and keep it running, or use
+Heroku. At this point, I feel confident I can also work and deliver
+products using Serverless! 🙌
 
 This file uploader has the following features:
 - Allows user registration and user verification.
@@ -25,6 +29,11 @@ developers:
 - It uses Prettier and Eslint, so no ugly code on sight 😍
 - It runs lint and test validations on CircleCI on pull requests.
 
+![](https://i.imgur.com/ozF8dOb.png)
+
+_I know the `checkIn` policy needs some love, but I want to move to
+another project._
+
 ## Index
 
 - [How to build](#how-to-build)
@@ -32,6 +41,11 @@ developers:
   - [Installing the dependencies](#installing-the-dependencies)
   - [Initializing the repository](#initializing-the-repository)
 - [I want to try it now!](#i-want-to-try-it-now)
+- [My reasoning while building this](#my-reasoning-while-building-this)
+  - [Design Decissions](#design-decissions)
+  - [Disclaimer](#disclaimer)
+  - [Now What](#now-what)
+- [Resources](#resources)
 
 ## How to build
 
@@ -250,71 +264,125 @@ curl -H "Authorization: $token" \
   -X DELETE https://rvpujtrb06.execute-api.us-east-1.amazonaws.com/dev/removeUpload?fileName=isThisAFunMeme.jpg
 ```
 
-## Pros / Cons
-
 ## My reasoning while building this
 
-## Things I am sure I missed
+My main goal with this repository was to learn how to deploy code
+to AWS Lambdas using serverless. I decided to take a TDD approach,
+and to focus on a folder structure and utilities that would be
+powerful to extend for further purposes. It was very challenging to
+navigate through the intricacies of these technologies, but I'm happy
+to say that this code could be used as a stepping stone for building
+any other service or API.
 
-## Things I need to study
+### Design Decissions
 
-## Subjective Pros / Cons
+While working on this project, I took the liberty to make some design
+decissions that I believe are correct but might not be for others
+(based on opinions and experiences). I'm going to list them so I can
+find them later more easily:
 
-## Now what
+1. **Self Contained Utilities & Small Handlers:** AWS recommends the
+business code to be detached from the handlers. I tried to follow this
+approach by making multiple-purpose self-contained utilities that the
+handlers could use to fulfil each one of their purposes, but I left
+the business logic in the handlers. My position here is that each
+handler should do just one thing, which should be small, and should
+have a limited and short list of caveats also described in the
+handlers. Since handlers have 100% unit test coverage, I believe this
+approach to be decent. On the utilities side, on larger projects they
+might be better separated in folders (and perhaps into separate
+repositories if they grow enough).
 
-I want to do it in Go 😱
+2. **Bad RESTful API:** This API is bad at REST, but it could be
+better with little tweaks. I decided to put my time into making sure I
+could support a RESTful API using serverless and AWS Lambdas, so we
+have some DELETE endpoints outside of the GET and POST endpoints. The
+namings of these endpoints don't overlap, which is a key difference
+with RESTful APIs. A project like this with the proper time invested
+would have a RESTful API without trouble, and specially without having
+to change the underlying ideas: it's just about defining the proper
+methods at the `serverless.yml` file, and grouping the handlers that
+share a common resource in a separate folder.
 
-## License
+3. **Piping Handlers:** our `util/handler.js` allows our handlers to
+be piped from and to one another. This for me is a key decission
+point, since it allows us to compose handlers, thus permitting code
+reutilization.
 
-## Shout Out To My Crew
+4. **Meta Authentication Policies:** The handlers I made allow an
+authentication policy that is invoked within the execution of a
+single endpoint, which might happen right afterwards AWS routes the
+request through the authenticator. Both the authorize handler and
+this authentication policy (called `checkIn`) call almost the same
+code underneath. This causes a little overhead, but the benefit is
+that we're able to have a centralized place where we do
+authentication and user retrieval, which we can just pipe at the
+beginning of the handlers we have to provide security and a ready to
+use user in the same `event` object. It might be the case that AWS has
+a way to do this more accordingly to AWS designs, but I am not aware
+of it.
 
----
+5. **TDD:** I decided to write the unit tests as early as possible. I
+tried to do them before I wrote some endpoints, but more realistically
+I ended up writing many of them in parallel. It proved to be a bit
+challenging, because serverless and AWS functions have their own
+complications which required further reading on the AWS docs and the
+source code of the libraries that I'm using. I felt a bit blocked
+while figuring out why these libraries were screaming, and then when
+even though the tests passed, the endpoints didn't work. However, as
+soon as I figured out how to make a couple work, fixing the rest of
+them followed smoothly. I think it proves that environmental issues
+should be able to be solved by inference, where the business logic can
+remain as unedited as possible, and small centralized changes can
+solve issues for accross the platform.
 
-Resources:
+6. **No ORM:** Using DynamoDB feels hard because it's really different
+to other No-SQL databases that are more popular (such as Mongo or
+CouchDB), and also that it lacks the many ORMs that other databases
+have. While looking at [Dynamoose](https://github.com/dynamoosejs/dynamoose),
+I found out that [it required a local copy of DynamoDB to run unit
+tests](https://github.com/dynamoosejs/dynamoose/issues/256). I browsed
+for the alternatives and found this pos: [Introducing the Amazon
+DynamoDB DataMapper for JavaScript](https://aws.amazon.com/blogs/developer/introducing-the-amazon-dynamodb-datamapper-for-javascript-developer-preview/#defining-a-model-without-typescript).
+A library made by Amazon to make it easier to use the DynamoDB client.
+It's beautiful and it works, and it pairs well with `aws-sdk-mock`, so
+I used it :)
 
-- <https://github.com/danilop/LambdAuth/blob/master/LambdAuthCreateUser/index.js>
-- <https://github.com/shekhargulati/hands-on-serverless-guide/blob/master/01-aws-lambda-serverless-framework/03-building-rest-api-in-nodejs-with-lambda-gateway-dynamodb-serverless.md>
-- <https://aws.amazon.com/blogs/compute/error-handling-patterns-in-amazon-api-gateway-and-aws-lambda/>
+### Disclaimer
 
-Dynamoose and cloudformation:
-- https://github.com/dynamoosejs/dynamoose/issues/151
-- https://www.npmjs.com/package/dynamoose-to-cloudformation
-The above sucks
-- https://aws.amazon.com/blogs/developer/introducing-the-amazon-dynamodb-datamapper-for-javascript-developer-preview/#defining-a-model-without-typescript
+This API feels secure and robust, I think the file structure needs
+work but sacrificing it to focus in the toolset was a decent
+compromise, since the requirements were not very elaborated. The
+handlers being small and 100% unit tested feels great, I ended up
+writing endpoints that I didn't try live until I finished the rest of
+the application. I think that my approach is decent. However, I didn't
+put attention on several important things. Here's a list:
 
-S3
-- <https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html>
-- <https://stackoverflow.com/questions/40188287/aws-lambda-function-write-to-s3>
-- <https://www.netlify.com/blog/2016/11/17/serverless-file-uploads/>
-- <https://docs.aws.amazon.com/AmazonS3/latest/dev/ShareObjectPreSignedURLJavaSDK.html>
-- <https://medium.com/@olotintemitope/how-to-upload-files-to-amazon-s3-using-nodejs-lambda-and-api-gateway-bae665127907>
-- <https://stackoverflow.com/questions/38831829/nodejs-aws-sdk-s3-generate-presigned-url>
-- <https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getSignedUrl-property>
-
-JWT:
-- <https://yos.io/2017/09/03/serverless-authentication-with-jwt/>
-- <https://github.com/mcnamee/serverless-jwt-auth/blob/master/auth/VerifyToken.js>
-
-Perhaps obvious things that I'm not including:
+**Perhaps obvious things that I'm not including:**
 - I know I could reuse the JWT token for the verification token, I
-  don't think it adds any practical benefit over code reduction. It
-  seemed expensive and I wanted to move on to other studies.
+  don't think it adds any practical benefit over code reduction.
 - I should have discovered this earlier: <https://github.com/dherault/serverless-offline>
-- This app is not very REST-friendly (I think it might be CRUD
-  friendly, but that might be an overstatement).
-- Automatically generated documentation. I know it's a thing in
+- Automatically generated documentation. I've heard it's a thing in
   serverless/aws lambdas, but I haven't gotten myself there.
 - Currently, a user can retrieve more than one jwt token and use them
   independently. In some applications, it makes sense to restrict
   tokens so that only the last one generated is the valid one.
 - The database models don't have a migration strategy.
 - I'm missing configurations based on the deploy environment.
-- A user interface that would access these endpoints.
-- Files are not stored in a separate table.
-- Multipart uploads.
-- Password recovery.
+- Information about the files is not stored in a separate table.
+- Multipart uploads, we don't have this yet, but I've seen code about
+  it.
+- Password recovery. If users forget their password, they're locked!
+  😬 🔒 ☠️
+- I'm missing a user interface 🙈 I hope the fact that I'm using
+  webpack highlights that I know a fair bit about building user
+  interfaces.
 
-Things I don't understand yet:
+![](https://i.imgur.com/hjofzYI.gif)
+
+And, because we're all noobs at some point, here are some of the
+things I haven't figured out so far:
+
 - DynamoDB is super tricky. Setting up createdAt as a range key causes
   wreckage in my current way to update. I wasn't successful with
   dynamo-mappers or with dynamoose. I know I will be able to figure
@@ -325,10 +393,28 @@ Things I don't understand yet:
   to just get the last log, and it seems to loop over older logs, then
   newer, then somehow returns nothing a couple of times, then I get
   the mos recent logs.
+ 
+### Now what
 
+Up next, I want to focus on learning about PRobot, then I'd like to
+revisit this to make a Golang copy of this repository. I actually
+started with Golang, but it has been about 3 years without having
+excuses to use Golang on my daily job, so I'm rusty! :(
 
-- Unauthorized thing.. this took me so long: https://forums.aws.amazon.com/thread.jspa?threadID=226689
+## Resources
 
-curl -d '{"email":"sadasant@gmail.com", "password":"value2"}' -H "Content-Type: application/json" -X POST https://rvpujtrb06.execute-api.us-east-1.amazonaws.com/dev/register
-serverless invoke -f register -d '{ "body": "{\"email\":\"sadasant@gmail.com\", \"password\":\"value2\"}" }'
-curl -d '{"email":"sadasant@gmail.com", "password":"value2"}' -H "Content-Type: application/json" -X POST https://rvpujtrb06.execute-api.us-east-1.amazonaws.com/dev/register
+Here is a list of things I looked at while working on this repository:
+
+- [LambdAuth](https://github.com/danilop/LambdAuth)
+- [Building a REST API in Node.js with Lambda, API Gateway, DynamoDB, and Serverless framework](https://github.com/shekhargulati/hands-on-serverless-guide/blob/master/01-aws-lambda-serverless-framework/03-building-rest-api-in-nodejs-with-lambda-gateway-dynamodb-serverless.md)
+- [Error Handling Patterns in Amazon API Gateway and AWS Lambda](https://aws.amazon.com/blogs/compute/error-handling-patterns-in-amazon-api-gateway-and-aws-lambda/)
+- [Introducing the Amazon
+DynamoDB DataMapper for JavaScript](https://aws.amazon.com/blogs/developer/introducing-the-amazon-dynamodb-datamapper-for-javascript-developer-preview/#defining-a-model-without-typescript)
+- [Class: AWS.S3 on the docs for AWSJavaScriptSDK](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html)
+- [Serverless File Uploads](https://www.netlify.com/blog/2016/11/17/serverless-file-uploads/)
+- [Generate a Pre-signed Object URL Using the AWS SDK for Java](https://docs.aws.amazon.com/AmazonS3/latest/dev/ShareObjectPreSignedURLJavaSDK.html)
+- [How to upload files to Amazon s3 using NodeJs, Lambda and Api
+  Gateway](https://medium.com/@olotintemitope/how-to-upload-files-to-amazon-s3-using-nodejs-lambda-and-api-gateway-bae665127907)
+- [Nodejs AWS SDK S3 Generate Presigned URL](https://stackoverflow.com/questions/38831829/nodejs-aws-sdk-s3-generate-presigned-url)
+- [Serverless Authentication with JSON Web Tokens](https://yos.io/2017/09/03/serverless-authentication-with-jwt/)
+- [Serverless JWT Auth Boilerplate](https://github.com/mcnamee/serverless-jwt-auth/blob/master/auth/VerifyToken.js)
