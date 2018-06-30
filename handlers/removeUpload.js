@@ -8,7 +8,7 @@ import { removeFile } from '../utils/s3'
 export default handler(checkIn, async event => {
   let { fileName } = event.queryStringParameters
   let user = event.user
-  let files = JSON.parse(user.files || '[]')
+  let files = JSON.parse(user.files)
 
   let cleanFileName = sanitize(fileName)
   if (user.files && !user.files.includes(cleanFileName)) {
@@ -18,7 +18,7 @@ export default handler(checkIn, async event => {
   try {
     await removeFile(cleanFileName)
   } catch (e) {
-    console.info(`Failed to remove file "${fileName}"`, e)
+    console.info(`Failed to remove file "${fileName}"`, e.message)
     throw `Failed to remove file "${fileName}"`
   }
 

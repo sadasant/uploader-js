@@ -10,7 +10,7 @@ export default handler(checkIn, async event => {
   let { fileName, expiresAt = oneDay } = event.queryStringParameters
   let cleanFileName = sanitize(fileName)
   let user = event.user
-  let files = JSON.parse(user.files || '[]')
+  let files = JSON.parse(user.files)
 
   if (!files.includes(cleanFileName)) {
     return notFound(`The file "${cleanFileName}" was not found`)
@@ -25,7 +25,7 @@ export default handler(checkIn, async event => {
   try {
     shareUrl = shareFile(cleanFileName)
   } catch (e) {
-    console.info(`Failed to share file "${fileName}"`, e)
+    console.info(`Failed to share file "${fileName}"`, e.message)
     throw `Failed to share file "${fileName}"`
   }
 

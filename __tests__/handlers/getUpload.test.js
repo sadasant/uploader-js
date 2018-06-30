@@ -80,7 +80,9 @@ describe('getUpload', () => {
     }
     let result = await authorizedLambda(event, {})
     expect(result.statusCode).toBe(404)
-    expect(result.body.message).toBe(`The file "${missingFileName}" was not found`)
+    expect(result.body.message).toBe(
+      `The file "${missingFileName}" was not found`
+    )
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
   })

@@ -19,7 +19,7 @@ export default handler(checkIn, async event => {
   await uploadFile(cleanFileName, buffer)
 
   let user = event.user
-  let files = JSON.parse(user.files || '[]')
+  let files = JSON.parse(user.files)
   if (files.includes(cleanFileName))
     return conflict(`This user already has a file with the same name`)
 

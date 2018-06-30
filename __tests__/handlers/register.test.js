@@ -26,7 +26,7 @@ describe('register', () => {
     AWS.mock('DynamoDB', 'putItem', function(params, callback) {
       dynamoCalls.push(['putItem', params])
       if (failUserCreation) {
-        callback(new Error('S3 is Down'))
+        callback(new Error('AWS is Down'))
       } else {
         callback(null, 'successfully put item in database')
       }
@@ -102,9 +102,7 @@ describe('register', () => {
     }
     let result = await lambda(event, {})
     expect(result.statusCode).toBe(500)
-    expect(result.body.message).toBe(
-      `Failed to create user "${newEmail}"`
-    )
+    expect(result.body.message).toBe(`Failed to create user "${newEmail}"`)
     expect(dynamoCalls.length).toBe(2)
     expect(dynamoCalls[0][0]).toBe('query')
     expect(dynamoCalls[1][0]).toBe('putItem')

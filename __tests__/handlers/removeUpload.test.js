@@ -11,6 +11,7 @@ describe('removeUpload', () => {
   let password = '123IsThisASecurePassword?'
   let fileName = 'My File Name (1).ppt'
   let badFileName = 'bad file name'
+  let failToDelete = false
 
   beforeAll(() => {
     AWS.mock('DynamoDB', 'query', async function(params) {
@@ -28,7 +29,11 @@ describe('removeUpload', () => {
     })
     AWS.mock('S3', 'deleteObject', function(params, callback) {
       s3Calls.push(['deleteObject', params])
-      callback(null)
+      if (failToDelete) {
+        callback(new Error('AWS is Down'))
+      } else {
+        callback(null)
+      }
     })
     AWS.mock('DynamoDB', 'updateItem', async function(params) {
       dynamoCalls.push(['updateItem', params])
@@ -41,6 +46,7 @@ describe('removeUpload', () => {
   beforeEach(() => {
     dynamoCalls = []
     s3Calls = []
+    failToDelete = false
   })
 
   it('should remove a specific file by fileName', async () => {
@@ -80,6 +86,24 @@ describe('removeUpload', () => {
     expect(result.statusCode).toBe(404)
     expect(result.body).toEqual({
       message: `The file "${badFileName}" was not found`
+    })
+  })
+
+  it('should give the appropriate response if the AWS fails', async () => {
+    failToDelete = true
+    let event = {
+      body: JSON.stringify({
+        email,
+        password
+      }),
+      queryStringParameters: {
+        fileName
+      }
+    }
+    let result = await authorizedLambda(event, {})
+    expect(result.statusCode).toBe(500)
+    expect(result.body).toEqual({
+      message: `Failed to remove file "${fileName}"`
     })
   })
 })
