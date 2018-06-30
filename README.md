@@ -242,12 +242,12 @@ leaving the terminal by installing `sudo apt-get install caca-utils` and running
 
     cacaview isThisAFunMeme.jpg
 
-11. `DELETE removeUpload`: Finally, you can remove your own account by
-calling thi endpoint as follows:
+11. `DELETE removeUpload`: Finally, you can remove files previously
+uploaded. You can call this endpoint as follows:
 
 ```bash
 curl -H "Authorization: $token" \
-  -X DELETE https://rvpujtrb06.execute-api.us-east-1.amazonaws.com/dev/removeAccount
+  -X DELETE https://rvpujtrb06.execute-api.us-east-1.amazonaws.com/dev/removeUpload?fileName=isThisAFunMeme.jpg
 ```
 
 ## Pros / Cons
