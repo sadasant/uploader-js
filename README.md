@@ -71,8 +71,8 @@ Now, you're ready for the terminal.
 
 ### Installing the dependencies
 
-You'll need NodeJS. So far, I like using
-[nvm](https://github.com/creationix/nvm) since it gives you the
+You'll need NodeJS. I like using
+[nvm](https://github.com/creationix/nvm), since it gives you the
 freedom to move back and forward between one version and another.
 Just as they say in their README, you can install NVM with:
 
