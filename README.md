@@ -1,16 +1,15 @@
 ﻿## Fancy Uploader In JavaScript
 
 Here's a fully working MVP for a file uploader. I did it to **learn
-about serverless**, making some compromises in the technology I wanted
-to use and more or less how I wanted to structure the files. We'll get
-into that later.
+about serverless**, while taking advantage of thigs that I already
+know and like, like Webpack, Babel & Jest.
 
-This File Uploader™️  has the following features:
+This file uploader has the following features:
 - Allows user registration and user verification.
-- Allows further authentication via JWT tokens.
-- Allows file uploads 🚀 to the cloud ☁️
-- Allows users to list their uploads, and remove them.
-- Allows users to generate temporary links to access these files.
+- Further authentication powered by JWT tokens.
+- All the files are private.
+- Users can list their uploads, and remove them.
+- Users can also generate temporary links to access these files.
 
 ![](https://i.imgur.com/lkEd8L4.gif)
 
@@ -31,7 +30,7 @@ developers:
 The first step is actually not with the repo, but with your AWS
 account:
 1. Get in the [AWS Console](https://console.aws.amazon.com/).
-2. Go to the IAM section. We need to crete a user.
+2. Go to the IAM section.
 3. Create a user, give it `Programmatic access`.
 4. Give it full `List`, `Read` & `Write` access to `CloudFormation`.
 5. Give it `IAMFullAccess`.
@@ -66,7 +65,7 @@ It will ask you the credentials of an IAM user. Put the credentials of
 the user you just created.
 
 After that, I highly recommend reading the serverless CLI reference (I
-tend to forget about the `info` commmand): <https://serverless.com/framework/docs/providers/azure/cli-reference/>
+tend to forget commands, even the most used ones): <https://serverless.com/framework/docs/providers/azure/cli-reference/>
 
 ### Repository Initialization
 
@@ -250,6 +249,10 @@ curl -H "Authorization: $token" \
 ## Things I need to study
 
 ## Subjective Pros / Cons
+
+## Now what
+
+I want to do it in Go 😱
 
 ## License
 
