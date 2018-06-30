@@ -350,6 +350,10 @@ A library made by Amazon to make it easier to use the DynamoDB client.
 It's beautiful and it works, and it pairs well with `aws-sdk-mock`, so
 I used it :)
 
+7. **Why base64 file contents?** It's just easier to read in the
+consle in case I dump it :( I and easier to work with over the
+network. I'm sorry! :) it should be easy to change!
+
 ### Disclaimer
 
 This API feels secure and robust, I think the file structure needs
