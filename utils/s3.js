@@ -1,6 +1,9 @@
 import AWS from 'aws-sdk'
 import config from '../config.json'
 
+// Here is a bunch of wrappers around
+// AWS S3 methods, because these methods aren't promises.
+
 export const uploadFile = (fileName, body) =>
   new Promise((resolve, reject) => {
     let s3 = new AWS.S3()

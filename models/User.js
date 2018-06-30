@@ -29,6 +29,11 @@ const model = NewModel({
 
 export const User = model.Model
 
+// Model Methods
+// -------------
+
+// findUser runs a DynamoDB query with the given
+// map of properties and values (the given query).
 export async function findUser(query) {
   let mapper = dynamoMapper()
   let found
