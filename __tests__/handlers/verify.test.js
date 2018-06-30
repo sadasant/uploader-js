@@ -1,54 +1,31 @@
 import AWS from 'aws-sdk-mock'
-import lambdaHandler from '../../handlers/verify'
-import { promisify } from 'util'
-import { computeHash } from '../../utils/crypto'
-const lambda = promisify(lambdaHandler)
+import lambda from '../../handlers/verify'
+import { newUserItem, authorizer } from '../testUtils'
+const authorizedLambda = authorizer(lambda)
 
 let dynamoCalls = []
 
 describe('verify', () => {
   let verifiedEmail = 'verified@email.com'
   let unverifiedEmail = 'unverified@email.com'
-  let missingEmail = 'missing@email.com'
   let foundEmails = [verifiedEmail, unverifiedEmail]
-
   let password = 'password'
   let verifyToken = 'token'
-  let hash
-  let salt
-
-  let newUserItem = email => ({
-    email: {
-      S: email
-    },
-    passwordHash: {
-      S: hash
-    },
-    passwordSalt: {
-      S: salt
-    },
-    metadata: {
-      M: {
-        verified: {
-          BOOL: email === verifiedEmail
-        },
-        verifyToken: {
-          S: verifyToken
-        }
-      }
-    }
-  })
 
   beforeAll(async () => {
-    let result = await computeHash(password)
-    hash = result.hash
-    salt = result.salt
     AWS.mock('DynamoDB', 'query', async function(params) {
       dynamoCalls.push(['query', params])
       let email = params.ExpressionAttributeValues[':val1'].S
       if (foundEmails.includes(email)) {
         return {
-          Items: [newUserItem(email)]
+          Items: [
+            await newUserItem({
+              email,
+              password,
+              verified: email === verifiedEmail,
+              verifyToken: email === unverifiedEmail ? verifyToken : undefined
+            })
+          ]
         }
       }
       return {}
@@ -73,13 +50,11 @@ describe('verify', () => {
         verifyToken
       })
     }
-    let result = await lambda(event, {})
+    let result = await authorizedLambda(event, {})
     expect(result.statusCode).toBe(200)
-    expect(result.body).toEqual(
-      JSON.stringify({
-        message: `User "${unverifiedEmail}" has been verified`
-      })
-    )
+    expect(result.body).toEqual({
+      message: `User "${unverifiedEmail}" has been verified`
+    })
     expect(dynamoCalls.length).toBe(2)
     expect(dynamoCalls[0][0]).toBe('query')
     expect(dynamoCalls[1][0]).toBe('updateItem')
@@ -93,24 +68,11 @@ describe('verify', () => {
         verifyToken: 'bad token'
       })
     }
-    let result = await lambda(event, {})
-    expect(result.statusCode).toBe(500)
-    expect(result.body).toBe("The token doesn't match")
-    expect(dynamoCalls.length).toBe(1)
-    expect(dynamoCalls[0][0]).toBe('query')
-  })
-
-  it("should throw if the password doesn't match", async () => {
-    let event = {
-      body: JSON.stringify({
-        email: unverifiedEmail,
-        password: 'bad password',
-        verifyToken
-      })
-    }
-    let result = await lambda(event, {})
-    expect(result.statusCode).toBe(500)
-    expect(result.body).toBe("The password doesn't match")
+    let result = await authorizedLambda(event, {})
+    expect(result.statusCode).toBe(403)
+    expect(result.body).toEqual({
+      message: "The token doesn't match"
+    })
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
   })
@@ -123,24 +85,11 @@ describe('verify', () => {
         verifyToken
       })
     }
-    let result = await lambda(event, {})
-    expect(result.statusCode).toBe(500)
-    expect(result.body).toBe(
-      `The email "${verifiedEmail}" has already been verified`
-    )
-    expect(dynamoCalls.length).toBe(1)
-    expect(dynamoCalls[0][0]).toBe('query')
-  })
-
-  it("should throw if the user wasn't found", async () => {
-    let event = {
-      body: JSON.stringify({
-        email: missingEmail
-      })
-    }
-    let result = await lambda(event, {})
-    expect(result.statusCode).toBe(500)
-    expect(result.body).toBe(`Email "${missingEmail}" not found`)
+    let result = await authorizedLambda(event, {})
+    expect(result.statusCode).toBe(409)
+    expect(result.body).toEqual({
+      message: `The email "${verifiedEmail}" has already been verified`
+    })
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
   })

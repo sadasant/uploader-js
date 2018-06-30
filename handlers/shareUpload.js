@@ -1,26 +1,40 @@
-import AWS from 'aws-sdk'
 import sanitize from 'sanitize-filename'
 import moment from 'moment'
 import handler from '../utils/handler'
 import checkIn from '../policies/checkIn'
-import config from '../config.json'
+import { notFound } from '../utils/httpCodes'
+import { shareFile } from '../utils/s3'
 
-export default handler(checkIn, async function verify(event) {
+export default handler(checkIn, async event => {
   let oneDay = 60 * 60 * 24
-  let { fileName, expiresAt = oneDay } = event.body
+  let { fileName, expiresAt = oneDay } = event.queryStringParameters
   let cleanFileName = sanitize(fileName)
   let user = event.user
-  if (user.files && !user.files.includes(cleanFileName)) {
-    throw `The file name "${cleanFileName}" was not found`
+  let files = JSON.parse(user.files)
+
+  if (!files.includes(cleanFileName)) {
+    return notFound(`The file "${cleanFileName}" was not found`)
   }
-  let s3 = new AWS.S3()
+
   if (typeof expiresAt === 'string') {
+    // moment().diff() results in a millisecond value
     expiresAt = moment(expiresAt).diff() / 1000
   }
-  return s3.getSignedUrl('getObject', {
-    Bucket: config.s3.buckets.files,
-    Key: cleanFileName,
-    // moment().diff() results in a millisecond value
-    Expires: expiresAt
-  })
+
+  let shareUrl
+  try {
+    shareUrl = shareFile(cleanFileName)
+  } catch (e) {
+    console.info(`Failed to share file "${fileName}"`, e.message)
+    throw `Failed to share file "${fileName}"`
+  }
+
+  console.info(`Share URL for file "${fileName}" is ${shareUrl}`)
+
+  return {
+    statusCode: 200,
+    body: {
+      url: shareUrl
+    }
+  }
 })

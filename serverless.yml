@@ -15,15 +15,14 @@ provider:
     - Effect: Allow
       Action:
         - "s3:*"
-      Resource: "arn:aws:s3:::uploader-files/*"
+      Resource: "arn:aws:s3:::uploader-private-files/*"
 
 resources:
   Resources:
     UploadBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: uploader-files
-        AccessControl: PublicRead
+        BucketName: uploader-private-files
         CorsConfiguration:
           CorsRules:
           - AllowedMethods:
@@ -53,6 +52,23 @@ functions:
           path: unregister
           method: post
           cors: true
+  getAuthToken:
+    handler: handlers.getAuthToken
+    events:
+      - http:
+          path: getAuthToken
+          method: post
+          cors: true
+  authorize:
+    handler: handlers.authorize
+  getVerifyToken:
+    handler: handlers.getVerifyToken
+    events:
+      - http:
+          path: getVerifyToken
+          method: post
+          cors: true
+          authorizer: ${self:custom.authorizer.authorize}
   verify:
     handler: handlers.verify
     events:
@@ -60,21 +76,15 @@ functions:
           path: verify
           method: post
           cors: true
-  authenticate:
-    handler: handlers.authenticate
-    events:
-      - http:
-          path: authenticate
-          method: post
-          cors: true
+          authorizer: ${self:custom.authorizer.authorize}
   removeAccount:
     handler: handlers.removeAccount
     events:
       - http:
           path: removeAccount
-          method: post
+          method: delete
           cors: true
-          authorizer: authenticate
+          authorizer: ${self:custom.authorizer.authorize}
   listUploads:
     handler: handlers.listUploads
     events:
@@ -82,7 +92,7 @@ functions:
           path: listUploads
           method: get
           cors: true
-          authorizer: authenticate
+          authorizer: ${self:custom.authorizer.authorize}
   shareUpload:
     handler: handlers.shareUpload
     events:
@@ -90,7 +100,14 @@ functions:
           path: shareUpload
           method: get
           cors: true
-          authorizer: authenticate
+          authorizer: ${self:custom.authorizer.authorize}
+          request:
+            template:
+              application/json: >
+                {
+                  "fileName" : "$input.params('fileName')",
+                  "expiresAt": "$input.params('expiresAt')"
+                }
   upload:
     handler: handlers.upload
     events:
@@ -98,20 +115,27 @@ functions:
           path: upload
           method: post
           cors: true
-          authorizer: authenticate
+          authorizer: ${self:custom.authorizer.authorize}
   getUpload:
     handler: handlers.getUpload
     events:
       - http:
-          path: upload
+          path: getUpload
           method: get
           cors: true
-          authorizer: authenticate
+          authorizer: ${self:custom.authorizer.authorize}
   removeUpload:
     handler: handlers.removeUpload
     events:
       - http:
-          path: upload
+          path: removeUpload
           method: delete
           cors: true
-          authorizer: authenticate
+          authorizer: ${self:custom.authorizer.authorize}
+
+custom:
+  authorizer:
+    authorize:
+      name: authorize
+      type: TOKEN
+      identitySource: method.request.header.Authorization

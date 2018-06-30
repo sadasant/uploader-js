@@ -1,8 +1,7 @@
 import AWS from 'aws-sdk-mock'
-import lambdaHandler from '../../handlers/shareUpload'
-import { computeHash } from '../../utils/crypto'
-import { promisify } from 'util'
-const lambda = promisify(lambdaHandler)
+import lambda from '../../handlers/shareUpload'
+import { newUserItem, authorizer } from '../testUtils'
+const authorizedLambda = authorizer(lambda)
 
 let dynamoCalls = []
 let s3Calls = []
@@ -11,51 +10,48 @@ describe('shareUpload', () => {
   let email = 'noreply@gmail.com'
   let password = '123IsThisASecurePassword?'
   let fileName = 'My File Name (1).ppt'
-  let salt = 'bae'
+  let badFileName = 'bad file name'
+  let shareUrl = 'url'
+  let failToSignUrl = false
 
   beforeAll(() => {
     AWS.mock('DynamoDB', 'query', async function(params) {
       dynamoCalls.push(['query', params])
       let email = params.ExpressionAttributeValues[':val1'].S
-      let { hash } = await computeHash(password, salt)
       return {
         Items: [
-          {
-            email: {
-              S: email
-            },
-            passwordHash: {
-              S: hash
-            },
-            passwordSalt: {
-              S: salt
-            },
-            files: {
-              S: JSON.stringify([fileName])
-            }
-          }
+          await newUserItem({
+            email,
+            password,
+            files: [fileName]
+          })
         ]
       }
     })
-    AWS.mock('S3', 'getSignedUrl', async function(params) {
+    AWS.mock('S3', 'getSignedUrl', function(params) {
       s3Calls.push(['getSignedUrl', params])
+      if (failToSignUrl) throw new Error('(╯°□°)╯︵ ┻━┻')
+      return shareUrl
     })
   })
 
   beforeEach(() => {
     dynamoCalls = []
     s3Calls = []
+    failToSignUrl = false
   })
 
   it('should retrieve a temporary shareable link for a specific file', async () => {
     let event = {
       body: JSON.stringify({
         email,
-        password,
+        password
+      }),
+      queryStringParameters: {
         fileName
-      })
+      }
     }
-    let result = await lambda(event, {})
+    let result = await authorizedLambda(event, {})
     expect(result.statusCode).toBe(200)
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
@@ -67,12 +63,14 @@ describe('shareUpload', () => {
     let event = {
       body: JSON.stringify({
         email,
-        password,
+        password
+      }),
+      queryStringParameters: {
         fileName,
         expiresAt: 60 * 60
-      })
+      }
     }
-    let result = await lambda(event, {})
+    let result = await authorizedLambda(event, {})
     expect(result.statusCode).toBe(200)
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
@@ -84,12 +82,14 @@ describe('shareUpload', () => {
     let event = {
       body: JSON.stringify({
         email,
-        password,
+        password
+      }),
+      queryStringParameters: {
         fileName,
         expiresAt: '2018-08-08'
-      })
+      }
     }
-    let result = await lambda(event, {})
+    let result = await authorizedLambda(event, {})
     expect(result.statusCode).toBe(200)
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
@@ -97,29 +97,38 @@ describe('shareUpload', () => {
     expect(s3Calls[0][0]).toBe('getSignedUrl')
   })
 
-  it('should fail if the password is invalid', async () => {
+  it("should fail if the user doesn't have this file", async () => {
     let event = {
       body: JSON.stringify({
         email,
-        password: 'invalid password',
-        fileName
-      })
+        password
+      }),
+      queryStringParameters: {
+        fileName: badFileName
+      }
     }
-    let result = await lambda(event, {})
-    expect(result.statusCode).toBe(500)
-    expect(result.body).toBe(`The password doesn't match`)
+    let result = await authorizedLambda(event, {})
+    expect(result.statusCode).toBe(404)
+    expect(result.body).toEqual({
+      message: `The file "${badFileName}" was not found`
+    })
   })
 
-  it('should fail if the filName is not part of the user’s files', async () => {
+  it('should give the appropriate response if the AWS fails', async () => {
+    failToSignUrl = true
     let event = {
       body: JSON.stringify({
         email,
-        password,
-        fileName: 'bad file name'
-      })
+        password
+      }),
+      queryStringParameters: {
+        fileName
+      }
     }
-    let result = await lambda(event, {})
+    let result = await authorizedLambda(event, {})
     expect(result.statusCode).toBe(500)
-    expect(result.body).toBe(`The file name "bad file name" was not found`)
+    expect(result.body).toEqual({
+      message: `Failed to share file "${fileName}"`
+    })
   })
 })

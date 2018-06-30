@@ -1,13 +1,11 @@
 import handler from '../utils/handler'
 import checkIn from '../policies/checkIn'
 
-export default handler(checkIn, async function verify(event) {
-  let user = event.user
-  if (!user.files || user.files === '[]') {
-    throw `User "${user.email}" has not uploaded any file.`
-  }
+export default handler(checkIn, async event => {
+  let { files } = event.user
+  let arrayFiles = JSON.parse(files)
   return {
-    statusCode: 200,
-    files: JSON.parse(user.files)
+    statusCode: arrayFiles.length ? 200 : 204,
+    body: arrayFiles
   }
 })

@@ -1,27 +1,18 @@
-import { DynamoDbSchema, DynamoDbTable, embed } from '@aws/dynamodb-data-mapper'
+import { DynamoDbSchema, DynamoDbTable } from '@aws/dynamodb-data-mapper'
 
-export default function NewModel({ tableName, properties, metadata }) {
+export default function NewModel({ tableName, properties }) {
   class Model {}
-  class Metadata {}
-
-  Object.defineProperty(Metadata.prototype, DynamoDbSchema, {
-    value: metadata
-  })
 
   Object.defineProperties(Model.prototype, {
     [DynamoDbTable]: {
       value: tableName
     },
     [DynamoDbSchema]: {
-      value: {
-        ...properties,
-        metadata: embed(Metadata)
-      }
+      value: properties
     }
   })
 
   return {
-    Model,
-    Metadata
+    Model
   }
 }
