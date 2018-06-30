@@ -20,9 +20,9 @@ developers:
 - It uses the latest EcmaScript features I could think of at the
   moment.
 - It's fully **unit tested** 💪
+- As much documentation as possible.
 - It desploys on AWS using serverless, using as many severless features
-  I could come up with in a reasonable time span.
-  sls **is** super cool 😎
+  I could come up within a reasonable time span.
 - It uses Prettier and Eslint, so no ugly code on sight 😍
 - It runs lint and test validations on CircleCI on pull requests.
 
