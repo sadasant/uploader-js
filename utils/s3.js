@@ -11,7 +11,6 @@ export const uploadFile = (fileName, body) =>
         Body: body
       },
       (err, data) => {
-        console.info(err, data)
         if (err) reject(err)
         else resolve(data)
       }
@@ -27,7 +26,6 @@ export const downloadFile = fileName =>
         Key: fileName
       },
       (err, data) => {
-        console.info(err, data)
         if (err) reject(err)
         else resolve(data)
       }
@@ -43,7 +41,6 @@ export const removeFile = fileName =>
         Key: fileName
       },
       (err, data) => {
-        console.info(err, data)
         if (err) reject(err)
         else resolve(data)
       }

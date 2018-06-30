@@ -13,18 +13,12 @@ export const authorizer = lambda => async event => {
 
 export async function newUserItem({
   email,
-  hash,
-  salt,
   password,
   files,
   verified = false,
   verifyToken
 }) {
-  if (!hash && !salt) {
-    let result = await computeHash(password)
-    hash = result.hash
-    salt = result.salt
-  }
+  let { hash, salt } = await computeHash(password)
 
   let user = {
     email: {

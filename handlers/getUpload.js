@@ -15,7 +15,7 @@ export default handler(checkIn, async event => {
     let { Body } = await downloadFile(sanitize(fileName))
     base64File = Body.toString('base64')
   } catch (e) {
-    console.info(`Failed to download file "${fileName}"`, e)
+    console.info(`Failed to download file "${fileName}"`, e.message)
     throw `Failed to download file "${fileName}"`
   }
 
