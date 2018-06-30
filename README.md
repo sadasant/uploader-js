@@ -366,7 +366,9 @@ put attention on several important things. Here's a list:
 
 **Perhaps obvious things that I'm not including:**
 - I know I could reuse the JWT token for the verification token, I
-  don't think it adds any practical benefit over code reduction.
+  don't think it adds any practical benefit to invest more time on
+  that, the code that generates the verification token [is just this](https://github.com/sadasant/uploader-js/blob/master/utils/crypto.js#L26-L28).
+  Now, if this was a real project, I would certainly change it to reuse jwt :)
 - I should have discovered this earlier: <https://github.com/dherault/serverless-offline>
 - Automatically generated documentation. I've heard it's a thing in
   serverless/aws lambdas, but I haven't gotten myself there.
