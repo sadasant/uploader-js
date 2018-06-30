@@ -6,7 +6,7 @@ import config from '../config.json'
 // POST to getAuthToken with:
 //   { user: String, password: String }
 //
-// Results with a Body in the shape of:
+// Results with a body in the shape of:
 //   { token: String }
 //
 // Once the received credentials are validated,
