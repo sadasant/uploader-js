@@ -6,9 +6,8 @@ import checkIn from '../policies/checkIn'
 // then returns a very specifically formatted object that AWS uses
 // to determine wether the request should go to the specified handler or not.
 //
-// As always, Amazon's official docs are incredible and beautifully detailed:
+// Amazon's official docs are incredible and beautifully detailed:
 // https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html
-//
 // But if you need to see people using this in other real scenarios, here are
 // some of the other sources I found (they shared code! I wonder if they meant to):
 // - https://github.com/mcnamee/serverless-jwt-auth/blob/master/auth/VerifyToken.js

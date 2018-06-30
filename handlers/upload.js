@@ -17,6 +17,14 @@ import { uploadFile } from '../utils/s3'
 // Once the received credentials are validated,
 // saves the base64File in Amazon S3.
 //
+// The received fileName will be sanitized
+// using [sanitize-filename](https://www.npmjs.com/package/sanitize-filename).
+//
+// Will fail if the base64File doesn't have recognizable binaries.
+// Here is a [list of the supported file types](https://www.npmjs.com/package/file-type#supported-file-types).
+//
+// Will also fail if the fileName does not belong to the user's files.
+//
 export default handler(checkIn, async event => {
   let { base64File, fileName } = event.body
 

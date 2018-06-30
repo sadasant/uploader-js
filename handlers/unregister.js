@@ -11,6 +11,11 @@ import { conflict, notFound } from '../utils/httpCodes'
 //
 // Removes an unverified user from the database.
 //
+// Fails if either the user doesn't exist in the database,
+// or if the user has been verified.
+// Users can use the removeAccount endpoint to remove
+// verified accounts.
+//
 export default handler(async event => {
   let { email } = event.body
   let mapper = new dynamoMapper()

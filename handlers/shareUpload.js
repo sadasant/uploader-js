@@ -17,6 +17,8 @@ import { shareFile } from '../utils/s3'
 // generates a pre-signed link. By default, this link will
 // be active for one day.
 //
+// Fails if the fileName is not found amongst the user's files.
+//
 export default handler(checkIn, async event => {
   let oneDay = 60 * 60 * 24
   let { fileName, expiresAt = oneDay } = event.queryStringParameters

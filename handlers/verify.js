@@ -15,6 +15,9 @@ import { conflict, forbidden } from '../utils/httpCodes'
 // returns a base64 encoded version of the requested
 // file.
 //
+// Fails if the user is not found on the database,
+// or if the user has already been verified.
+//
 export default handler(checkIn, async event => {
   let { verifyToken } = event.body
   let user = event.user

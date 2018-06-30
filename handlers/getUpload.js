@@ -13,7 +13,8 @@ import { notFound } from '../utils/httpCodes'
 //   { base64File: String }
 //
 // Once the received credentials are validated,
-// returns a base64 encoded version of the requested
+// checks wether the fileName belongs to the user's files,
+// then returns a base64 encoded version of the requested
 // file.
 //
 export default handler(checkIn, async event => {

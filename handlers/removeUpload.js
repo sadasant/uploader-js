@@ -18,6 +18,9 @@ import { removeFile } from '../utils/s3'
 // Once the received credentials are validated,
 // removes the requested file.
 //
+// Fails if the fileName is not found amongst
+// the user's files.
+//
 export default handler(checkIn, async event => {
   let { fileName } = event.queryStringParameters
   let user = event.user
