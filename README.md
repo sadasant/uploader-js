@@ -401,10 +401,10 @@ things I haven't figured out so far:
   dynamo, and I match them with the documentation that Dynamo has, but
   this is time expensive.
 - Why does serverless logs behaves so weird? I haven't figured out how
-  to just get the last log, and it seems to loop over older logs, then
-  newer, then somehow returns nothing a couple of times, then I get
-  the mos recent logs.
- 
+  to just get the last log consistently, and it seems to loop over
+  older logs, then newer, then somehow returns nothing a couple of
+  times, then I get the mos recent logs.
+
 ### Now what
 
 Up next, I want to focus on learning about PRobot, then I'd like to
