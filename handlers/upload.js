@@ -16,7 +16,7 @@ export default handler(checkIn, async event => {
   }
 
   let cleanFileName = sanitize(fileName)
-  await uploadFile(cleanFileName, base64File)
+  await uploadFile(cleanFileName, buffer)
 
   let user = event.user
   let files = JSON.parse(user.files || '[]')

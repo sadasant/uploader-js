@@ -82,7 +82,7 @@ functions:
     events:
       - http:
           path: removeAccount
-          method: post
+          method: delete
           cors: true
           authorizer: ${self:custom.authorizer.authorize}
   listUploads:

@@ -7,7 +7,8 @@ export default handler(async function unregister(event) {
   let { email } = event.body
   let mapper = new dynamoMapper()
   for await (let user of mapper.query(User, { email })) {
-    if (user.verified) return conflict(`The email "${email}" has been verified`)
+    if (user.verified)
+      return conflict(`The email "${email}" has been previously verified`)
     await mapper.delete(user)
     return `User "${email}" successfully removed`
   }

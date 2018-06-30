@@ -1,14 +1,14 @@
 import AWS from 'aws-sdk'
 import config from '../config.json'
 
-export const uploadFile = (fileName, base64Body) =>
+export const uploadFile = (fileName, body) =>
   new Promise((resolve, reject) => {
     let s3 = new AWS.S3()
     s3.putObject(
       {
         Bucket: config.s3.buckets.files,
         Key: fileName,
-        Body: base64Body
+        Body: body
       },
       (err, data) => {
         console.info(err, data)

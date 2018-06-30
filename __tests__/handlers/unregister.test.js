@@ -66,7 +66,7 @@ describe('unregister', () => {
     expect(result.statusCode).toBe(409)
     expect(result.body).toEqual(
       JSON.stringify({
-        message: `The email "${verifiedEmail}" has been verified`
+        message: `The email "${verifiedEmail}" has been previously verified`
       })
     )
     expect(dynamoCalls.length).toBe(1)
