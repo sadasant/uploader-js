@@ -1,3 +1,5 @@
+import path from 'path'
+import fs from 'fs'
 import AWS from 'aws-sdk-mock'
 import lambda from '../../handlers/getUpload'
 import { newUserItem, authorizer } from '../testUtils'
@@ -9,7 +11,11 @@ let s3Calls = []
 describe('getUpload', () => {
   let email = 'noreply@gmail.com'
   let password = '123IsThisASecurePassword?'
-  let fileName = 'My File Name (1).ppt'
+  let fileName = 'isThisAFunMeme.jpg'
+  let bufferFile = fs.readFileSync(
+    path.resolve(`${__dirname}/../../misc/${fileName}`)
+  )
+  let base64File = new Buffer(bufferFile).toString('base64')
 
   beforeAll(() => {
     AWS.mock('DynamoDB', 'query', async function(params) {
@@ -26,7 +32,9 @@ describe('getUpload', () => {
     })
     AWS.mock('S3', 'getObject', function(params, callback) {
       s3Calls.push(['getObject', params])
-      callback(null)
+      callback(null, {
+        Body: bufferFile
+      })
     })
   })
 
@@ -39,12 +47,15 @@ describe('getUpload', () => {
     let event = {
       body: JSON.stringify({
         email,
-        password,
+        password
+      }),
+      queryStringParameters: {
         fileName
-      })
+      }
     }
     let result = await authorizedLambda(event, {})
     expect(result.statusCode).toBe(200)
+    expect(result.body.base64File).toBe(base64File)
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
     expect(s3Calls.length).toBe(1)

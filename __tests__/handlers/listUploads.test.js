@@ -34,7 +34,7 @@ describe('listUploads', () => {
     }
     let result = await authorizedLambda(event, {})
     expect(result.statusCode).toBe(200)
-    expect(result.files).toEqual(files)
+    expect(result.body).toEqual(files)
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
   })
@@ -49,8 +49,6 @@ describe('listUploads', () => {
     }
     let result = await authorizedLambda(event, {})
     expect(result.statusCode).toBe(204)
-    expect(result.body).toEqual({
-      message: `User "${email}" has not uploaded any file.`
-    })
+    expect(result.body).toEqual([])
   })
 })

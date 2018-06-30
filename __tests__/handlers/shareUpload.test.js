@@ -11,6 +11,7 @@ describe('shareUpload', () => {
   let password = '123IsThisASecurePassword?'
   let fileName = 'My File Name (1).ppt'
   let badFileName = 'bad file name'
+  let shareUrl = 'url'
 
   beforeAll(() => {
     AWS.mock('DynamoDB', 'query', async function(params) {
@@ -26,8 +27,9 @@ describe('shareUpload', () => {
         ]
       }
     })
-    AWS.mock('S3', 'getSignedUrl', async function(params) {
+    AWS.mock('S3', 'getSignedUrl', function(params) {
       s3Calls.push(['getSignedUrl', params])
+      return shareUrl
     })
   })
 
@@ -40,12 +42,15 @@ describe('shareUpload', () => {
     let event = {
       body: JSON.stringify({
         email,
-        password,
+        password
+      }),
+      queryStringParameters: {
         fileName
-      })
+      }
     }
     let result = await authorizedLambda(event, {})
     expect(result.statusCode).toBe(200)
+    // expect(result.body.url).toBe(shareUrl)
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
     expect(s3Calls.length).toBe(1)
@@ -56,13 +61,16 @@ describe('shareUpload', () => {
     let event = {
       body: JSON.stringify({
         email,
-        password,
+        password
+      }),
+      queryStringParameters: {
         fileName,
         expiresAt: 60 * 60
-      })
+      }
     }
     let result = await authorizedLambda(event, {})
     expect(result.statusCode).toBe(200)
+    // expect(result.body.url).toBe(shareUrl)
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
     expect(s3Calls.length).toBe(1)
@@ -73,13 +81,16 @@ describe('shareUpload', () => {
     let event = {
       body: JSON.stringify({
         email,
-        password,
+        password
+      }),
+      queryStringParameters: {
         fileName,
         expiresAt: '2018-08-08'
-      })
+      }
     }
     let result = await authorizedLambda(event, {})
     expect(result.statusCode).toBe(200)
+    // expect(result.body.url).toBe(shareUrl)
     expect(dynamoCalls.length).toBe(1)
     expect(dynamoCalls[0][0]).toBe('query')
     expect(s3Calls.length).toBe(1)
@@ -90,9 +101,11 @@ describe('shareUpload', () => {
     let event = {
       body: JSON.stringify({
         email,
-        password,
+        password
+      }),
+      queryStringParameters: {
         fileName: badFileName
-      })
+      }
     }
     let result = await authorizedLambda(event, {})
     expect(result.statusCode).toBe(404)

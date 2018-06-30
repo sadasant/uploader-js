@@ -1,14 +1,16 @@
 import handler from '../utils/handler'
 import checkIn from '../policies/checkIn'
-import { noContent } from '../utils/httpCodes'
 
 export default handler(checkIn, async event => {
-  let user = event.user
-  if (!user.files || user.files === '[]') {
-    return noContent(`User "${user.email}" has not uploaded any file.`)
+  let { files = '[]' } = event.user
+  let arrayFiles
+  try {
+    arrayFiles = JSON.parse(files)
+  } catch (e) {
+    console.info(`Invalid files: ${files}`)
   }
   return {
-    statusCode: 200,
-    files: JSON.parse(user.files)
+    statusCode: arrayFiles.length ? 200 : 204,
+    body: arrayFiles
   }
 })

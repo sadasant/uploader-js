@@ -10,7 +10,7 @@
   },
   "s3": {
     "buckets": {
-      "files": "uploader-files"
+      "files": "uploader-private-files"
     }
   },
   "jwt": {

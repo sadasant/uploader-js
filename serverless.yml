@@ -15,15 +15,14 @@ provider:
     - Effect: Allow
       Action:
         - "s3:*"
-      Resource: "arn:aws:s3:::uploader-files/*"
+      Resource: "arn:aws:s3:::uploader-private-files/*"
 
 resources:
   Resources:
     UploadBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: uploader-files
-        AccessControl: PublicRead
+        BucketName: uploader-private-files
         CorsConfiguration:
           CorsRules:
           - AllowedMethods:
@@ -102,6 +101,13 @@ functions:
           method: get
           cors: true
           authorizer: ${self:custom.authorizer.authorize}
+          request:
+            template:
+              application/json: >
+                {
+                  "fileName" : "$input.params('fileName')",
+                  "expiresAt": "$input.params('expiresAt')"
+                }
   upload:
     handler: handlers.upload
     events:
@@ -114,7 +120,7 @@ functions:
     handler: handlers.getUpload
     events:
       - http:
-          path: upload
+          path: getUpload
           method: get
           cors: true
           authorizer: ${self:custom.authorizer.authorize}
@@ -122,7 +128,7 @@ functions:
     handler: handlers.removeUpload
     events:
       - http:
-          path: upload
+          path: removeUpload
           method: delete
           cors: true
           authorizer: ${self:custom.authorizer.authorize}
