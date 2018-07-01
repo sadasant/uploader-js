@@ -336,15 +336,16 @@ soon as I figured out how to make a couple work, fixing the rest of
 them followed smoothly. I think it proves that environmental issues
 should be able to be solved by inference, where the business logic can
 remain as unedited as possible, and small centralized changes can
-solve issues for accross the platform.
+solve issues accross the platform.
 
 6. **No ORM:** Using DynamoDB feels hard because it's really different
 to other No-SQL databases that are more popular (such as Mongo or
 CouchDB), and also that it lacks the many ORMs that other databases
-have. While looking at [Dynamoose](https://github.com/dynamoosejs/dynamoose),
+have. Adding a local copy of DynamoDB to CircleCI just for unit tests
+felt a little bit wasteful. While looking at [Dynamoose](https://github.com/dynamoosejs/dynamoose),
 I found out that [it required a local copy of DynamoDB to run unit
 tests](https://github.com/dynamoosejs/dynamoose/issues/256). I browsed
-for the alternatives and found this pos: [Introducing the Amazon
+for the alternatives and found this post: [Introducing the Amazon
 DynamoDB DataMapper for JavaScript](https://aws.amazon.com/blogs/developer/introducing-the-amazon-dynamodb-datamapper-for-javascript-developer-preview/#defining-a-model-without-typescript).
 A library made by Amazon to make it easier to use the DynamoDB client.
 It's beautiful and it works, and it pairs well with `aws-sdk-mock`, so
@@ -359,7 +360,7 @@ network. I'm sorry! :) it should be easy to change!
 This API feels secure and robust, I think the file structure needs
 work but sacrificing it to focus in the toolset was a decent
 compromise, since the requirements were not very elaborated. The
-handlers being small and 100% unit tested feels great, I ended up
+handlers being small and 100% unit tested feels great! - I ended up
 writing endpoints that I didn't try live until I finished the rest of
 the application. I think that my approach is decent. However, I didn't
 put attention on several important things. Here's a list:
@@ -384,7 +385,7 @@ put attention on several important things. Here's a list:
   😬 🔒 ☠️
 - I'm missing a user interface 🙈 I hope the fact that I'm using
   webpack highlights that I know a fair bit about building user
-  interfaces. I'm not saying that using webpack makes you be good at
+  interfaces. I'm not saying that using webpack makes you good at
   building user interfaces (one doesn't imply the other), I'm just
   saying I've built a bunch and I will keep building them, just
   probably not for this project 😬
@@ -402,8 +403,8 @@ things I haven't figured out so far:
   this is time expensive.
 - Why does serverless logs behaves so weird? I haven't figured out how
   to just get the last log consistently, and it seems to loop over
-  older logs, then newer, then somehow returns nothing a couple of
-  times, then I get the mos recent logs.
+  older logs, then the newer ones, then somehow returns nothing a couple of
+  times, then I get the most recent logs... Seems crazy!
 
 ### Now what
 
