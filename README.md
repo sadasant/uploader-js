@@ -110,7 +110,7 @@ the tests:
 
 Or by deploying it yourself:
 
-    serverless deploy --force
+    serverless deploy
 
 ## I want to try it now!
 
