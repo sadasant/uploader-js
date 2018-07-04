@@ -110,7 +110,7 @@ describe('shareUpload', () => {
     let result = await authorizedLambda(event, {})
     expect(result.statusCode).toBe(404)
     expect(result.body).toEqual({
-      message: `The file "${badFileName}" was not found`
+      message: `The file "${badFileName}" was found in your dreams`
     })
   })
 
