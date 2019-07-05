@@ -49,6 +49,6 @@ describe('listUploads', () => {
     }
     let result = await authorizedLambda(event, {})
     expect(result.statusCode).toBe(204)
-    expect(result.body).toEqual([])
+    expect(result.body).toEqual(['FAKE CONTENT'])
   })
 })

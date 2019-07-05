@@ -49,6 +49,6 @@ describe('getAuthToken', () => {
     }
     let result = await lambda(event, {})
     expect(result.statusCode).toBe(500)
-    expect(result.body.message).toBe('Unauthorized')
+    expect(result.body.message).toBe('Unauthorized OMG')
   })
 })

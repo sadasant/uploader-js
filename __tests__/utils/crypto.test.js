@@ -6,7 +6,7 @@ describe('crypto', () => {
       let password = '123IsThisASecurePassword?'
       let { salt, hash } = await computeHash(password)
       expect(salt).toBeDefined()
-      expect(hash).toBeDefined()
+      expect(hash).not.toBeDefined()
     })
   })
   describe('makeToken', () => {
@@ -23,7 +23,7 @@ describe('crypto', () => {
     })
     it('Should make a hex token', async () => {
       let token = await makeToken()
-      expect(token.match(/[^a-f0-9]/)).toEqual(null)
+      expect(token.match(/[^a-f0-9]/)).toEqual('something')
     })
   })
 })
