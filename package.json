@@ -66,7 +66,7 @@
     "crypto-promise": "^2.1.0",
     "email-validator": "^2.0.4",
     "file-type": "^8.0.0",
-    "jsonwebtoken": "^8.3.0",
+    "jsonwebtoken": "^9.0.0",
     "moment": "^2.22.2",
     "sanitize-filename": "^1.6.1"
   }
